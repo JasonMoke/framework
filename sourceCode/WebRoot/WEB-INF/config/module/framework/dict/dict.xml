@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+ "http://struts.apache.org/dtds/struts-2.1.dtd">
+<!-- struts是Struts 2配置文件的根元素 -->
+<struts>
+	<!-- Struts 2的Action必须放在指定的包空间下定义 -->
+	<package name="com.framework.action.dict" namespace="/dict"
+		extends="struts-default">
+		<action name="findAllDict" class="com.framework.action.dict.DictAction"
+			method="findAllDict">
+			<result name="success">/jsp/framework/dict/dict_list.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="getDictManager" class="com.framework.action.dict.DictAction"
+			method="getDictManager">
+			<result name="success">/jsp/framework/dict/dictmanager_list.jsp
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="toAddDictList" class="com.framework.action.dict.DictAction"
+			method="toAddDictList">
+			<result name="success">/jsp/framework/dict/dict_add.jsp</result>
+		</action>
+		<action name="toAddDictManager" class="com.framework.action.dict.DictAction"
+			method="toAddDictManager">
+			<result name="success">/jsp/framework/dict/dictmanager_add.jsp
+			</result>
+		</action>
+		<action name="insertDictList" class="com.framework.action.dict.DictAction"
+			method="insertDictList">
+			<result name="success" type="chain">findAllDict</result>
+			<result name="input">/error.jsp</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		<action name="toUpdateDictList" class="com.framework.action.dict.DictAction"
+			method="toUpdateDictList">
+			<result name="success">/jsp/framework/dict/dict_modify.jsp
+			</result>
+		</action>
+		<action name="toUpdateDictmanager" class="com.framework.action.dict.DictAction"
+			method="toUpdateDictmanager">
+			<result name="success">/jsp/framework/dict/dictmanager_modify.jsp
+			</result>
+		</action>
+		<action name="detailDictList" class="com.framework.action.dict.DictAction"
+			method="detailDictList">
+			<result name="success">/jsp/framework/dict/dict_detail.jsp
+			</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		<action name="detailDictmanager" class="com.framework.action.dict.DictAction"
+			method="detailDictmanager">
+			<result name="success">/jsp/framework/dict/dictmanager_detail.jsp
+			</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		<action name="insertDictManager" class="com.framework.action.dict.DictAction"
+			method="insertDictManager">
+			<result name="success" type="redirectAction">
+				<param name="codeParam">${codeParam}</param>
+				<param name="actionName">getDictManager</param>
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+
+		<action name="deleteDictList" class="com.framework.action.dict.DictAction"
+			method="deleteDictList">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">findAllDict</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="deleteDictmanager" class="com.framework.action.dict.DictAction"
+			method="deleteDictmanager">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="codeParam">${codeParam}</param>
+				<param name="actionName">getDictManager</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="updateDictList" class="com.framework.action.dict.DictAction"
+			method="updateDictList">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">findAllDict</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="updateDictmanager" class="com.framework.action.dict.DictAction"
+			method="updateDictmanager">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="codeParam">${codeParam}</param>
+				<param name="actionName">getDictManager</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+	</package>
+	<package name="com.framework.action.dictValidate"
+		namespace="/dictAjax" extends="json-default">
+
+		<action name="getDictByCode" class="com.framework.action.dict.DictAction"
+			method="getDictByCode">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="getListmanagerCount" class="com.framework.action.dict.DictAction"
+			method="getListmanagerCount">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="changeStatus" class="com.framework.action.dict.DictAction"
+			method="changeStatus">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="managerchangeStatus" class="com.framework.action.dict.DictAction"
+			method="managerchangeStatus">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="getDictManagerByName" class="com.framework.action.dict.DictAction"
+			method="getDictManagerByName">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="getDictManagerByDictData" class="com.framework.action.dict.DictAction"
+			method="getDictManagerByDictData">
+			<result name="success" type="json"></result>
+		</action>
+			<action name="getDictManagerByNameID" class="com.framework.action.dict.DictAction"
+			method="getDictManagerByNameID">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="getDictManagerByDictDataID" class="com.framework.action.dict.DictAction"
+			method="getDictManagerByDictDataID">
+			<result name="success" type="json"></result>
+		</action>
+	</package>
+
+</struts>

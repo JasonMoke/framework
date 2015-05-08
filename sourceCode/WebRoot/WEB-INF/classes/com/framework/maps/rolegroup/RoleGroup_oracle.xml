@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--  -->
+<mapper namespace="com.framework.maps.rolegroup">
+
+    <!-- insert 元素：添加一条记录 -->
+    <insert id="add" parameterType="RoleGroup">
+        INSERT INTO t_role_group 
+        (
+            RoleGroupName,
+            RoleGroupRemark,
+            SeqNum,
+            Status,
+            CreatePerson,
+            CreateTime,
+            UpdatePerson,
+            UpdateTime,
+            UUID
+        ) 
+        VALUES 
+        (
+         #{RoleGroupName},
+         #{RoleGroupRemark},
+         #{SeqNum},
+         #{Status},
+         #{CreatePerson},
+         #{CreateTime},
+         #{UpdatePerson},
+         #{UpdateTime},
+         #{UUID}
+        )
+    </insert>
+    
+    <!-- insert 元素：添加多条记录 -->
+    <insert id="addList" parameterType="RoleGroup">
+        INSERT INTO t_role_group 
+        (
+            RoleGroupName,
+            RoleGroupRemark,
+            SeqNum,
+            Status,
+            CreatePerson,
+            CreateTime,
+            UpdatePerson,
+            UpdateTime,
+            UUID
+        ) 
+        VALUES 
+        <foreach collection="list" item="lt" index="index" separator=",">
+        (
+             #{lt.RoleGroupName},
+             #{lt.RoleGroupRemark},
+             #{lt.SeqNum},
+             #{lt.Status},
+             #{lt.CreatePerson},
+             #{lt.CreateTime},
+             #{lt.UpdatePerson},
+             #{lt.UpdateTime},
+             #{lt.UUID}
+        )
+        </foreach>
+    </insert>
+    
+    <!-- update 元素：更新一条记录 -->
+    <update id="update" parameterType="RoleGroup">
+        UPDATE t_role_group SET 
+             RoleGroupName=#{RoleGroupName},
+             RoleGroupRemark=#{RoleGroupRemark},
+             SeqNum=#{SeqNum},
+             Status=#{Status},
+             UpdatePerson=#{UpdatePerson},
+             UpdateTime=#{UpdateTime},
+             UUID=#{UUID}
+        WHERE 
+            RoleGroupName=#{RoleGroupName}
+    </update>
+    
+    <!-- update 元素：更新状态 -->
+    <update id="updateStatus" parameterType="RoleGroup">
+        UPDATE t_role_group SET 
+            Status=#{Status},
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE 
+            RoleGroupName=#{RoleGroupName}
+    </update>
+    
+    <!-- update 元素：更新多条记录 -->
+    <update id="updateStatusByIds" parameterType="java.util.Map">
+        UPDATE t_role_group SET 
+            Status=#{Status},
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE 
+            RoleGroupName IN 
+            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+                #{item}  
+            </foreach> 
+    </update>
+    
+    <!-- delete 元素：根据主键删除一条记录 -->
+    <delete id="delete" parameterType="java.lang.String">
+        DELETE FROM t_role_group 
+        WHERE 
+            RoleGroupName=#{RoleGroupName}
+    </delete>
+    
+    <!-- update 元素：逻辑删除一条记录 -->
+    <update id="deleteByLogic" parameterType="java.lang.String">
+        UPDATE t_role_group SET 
+            Status=99,
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE
+            RoleGroupName=#{RoleGroupName}
+    </update>
+    
+    <!-- update 元素：逻辑删除多条记录 -->
+    <update id="deleteBatch" parameterType="java.util.Map">
+        UPDATE t_role_group SET 
+            Status=99,
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE 
+            RoleGroupName IN 
+            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+                #{item}  
+            </foreach> 
+    </update>
+
+    <!-- select 元素：查询所有的记录 -->
+    <select id="findAll" resultType="RoleGroup">
+        
+        SELECT * FROM t_role_group 
+        WHERE 
+            Status!=99
+             <if test="RoleGroupName != null and RoleGroupName !='' ">
+		     AND RoleGroupName LIKE '%${RoleGroupName }%'  
+		  	</if>   
+             <if test="RoleGroupRemark != null and RoleGroupRemark !='' ">
+		     AND RoleGroupRemark LIKE '%${RoleGroupRemark }%'  
+		  	</if>   
+             <if test="SeqNum != null and SeqNum !='' ">
+		     AND SeqNum LIKE '%${SeqNum }%'  
+		  	</if>   
+             <if test="Status != null and Status !='' ">
+		     AND Status LIKE '%${Status }%'  
+		  	</if>   
+             <if test="CreatePerson != null and CreatePerson !='' ">
+		     AND CreatePerson LIKE '%${CreatePerson }%'  
+		  	</if>   
+             <if test="CreateTime != null and CreateTime !='' ">
+		     AND CreateTime LIKE '%${CreateTime }%'  
+		  	</if>   
+             <if test="UpdatePerson != null and UpdatePerson !='' ">
+		     AND UpdatePerson LIKE '%${UpdatePerson }%'  
+		  	</if>   
+             <if test="UpdateTime != null and UpdateTime !='' ">
+		     AND UpdateTime LIKE '%${UpdateTime }%'  
+		  	</if>   
+             <if test="UUID != null and UUID !='' ">
+		     AND UUID LIKE '%${UUID }%'  
+		  	</if>   
+    </select>
+    
+    <!-- select 元素：根据主键获取数据 -->
+    <select id="findById" resultType="RoleGroup">
+        <![CDATA[
+        SELECT * FROM t_role_group 
+        WHERE 
+            RoleGroupName=#{RoleGroupName}
+            AND Status!=99
+        ]]>
+    </select>
+    
+    <!-- select 元素：获取记录条数 -->
+    <select id="count">
+        <![CDATA[
+        SELECT COUNT(*) FROM t_role_group 
+        WHERE
+            RoleGroupName=#{RoleGroupName}
+            AND Status!=99
+        ]]>
+    </select>
+</mapper>

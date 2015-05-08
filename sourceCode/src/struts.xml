@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<!-- 配置struts2 多语言国际化  -->
+    <constant name="struts.custom.i18n.resources" value="messageResource"></constant>
+    <constant name="struts.i18n.encoding" value="UTF-8" />
+    <constant name="struts.objectFactory.spring.autoWire.alwaysRespect" value="true" /> 
+
+
+    <!-- 包含配置文件在此添加,此处不允许注册Action -->
+    <include file="../config/module/framework/systemmanager/systemmanager.xml" />
+    <include file="../config/module/framework/tree/tree.xml" />
+    <include file="../config/module/framework/user/user.xml" />
+    <include file="../config/module/framework/login/login.xml" />
+    <include file="../config/module/framework/module/module.xml" />
+    <include file="../config/module/framework/role/role.xml" />
+    <include file="../config/module/framework/authority/rightmanager.xml" />
+    <include file="../config/module/framework/authority/authorize.xml" />
+	<include file="../config/module/framework/dict/dict.xml" />
+	<include file="../config/module/framework/upload/upload.xml" />
+	<include file="../config/module/framework/logmanager/logmanager.xml" />
+	<include file="../config/module/framework/systemparam/systemparam.xml" />
+	<include file="../config/module/framework/organ/organ.xml" />
+	<include file="../config/module/framework/resources/resources.xml"/>
+	<include file="../config/module/framework/rolegroup/rolegroup.xml" />
+	<include file="../config/module/framework/session/session.xml" />
+	<include file="../config/module/framework/pubmenu/pubmenu.xml" />
+	<include file="../config/module/framework/navigation/navigation.xml" />
+	
+</struts>

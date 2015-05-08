@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"
+     xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+     xmlns:cxf="http://cxf.apache.org/core" xmlns:jaxws="http://cxf.apache.org/jaxws"
+     xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+     xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+     http://www.springframework.org/schema/util  
+     http://www.springframework.org/schema/util/spring-util-3.2.xsd 
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context-3.2.xsd
+     http://www.springframework.org/schema/tx
+     http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+     http://cxf.apache.org/core
+     http://cxf.apache.org/schemas/core.xsd
+     http://cxf.apache.org/jaxws
+     http://cxf.apache.org/schemas/jaxws.xsd
+     http://cxf.apache.org/jaxrs
+     http://cxf.apache.org/schemas/jaxrs.xsd">
+     
+     
+    <import resource="classpath:META-INF/cxf/cxf.xml" />  
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />  
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />  
+    <!-- 上面3个 import 为导入  CXF 的 Bean 定义文件--> 
+    <bean id="inMessageInterceptor" class="org.apache.cxf.interceptor.LoggingInInterceptor" />  
+    <bean id="outMessageInterceptor" class="org.apache.cxf.interceptor.LoggingOutInterceptor"/>
+    
+    <bean id="restSample" class="com.interfaces.services.demo.RESTSampleSource"/>
+    <jaxrs:server id="restServiceContainer" address="/DEMO" >
+		<jaxrs:serviceBeans>
+		    <ref bean="restSample" />
+		</jaxrs:serviceBeans>
+		<jaxrs:extensionMappings>
+		    <entry key="json" value="application/json" />
+		    <entry key="xml" value="application/xml" />
+		</jaxrs:extensionMappings>
+		<jaxrs:languageMappings>
+		       <entry key="en" value="en-gb"/>  
+		</jaxrs:languageMappings>
+		<!-- 输入日志拦截器   -->
+		<jaxrs:inInterceptors>  
+           <ref bean="inMessageInterceptor"/>  
+          <!--  <ref bean="InInterceptor"/> -->  
+        </jaxrs:inInterceptors>  
+        <!-- 输出日志拦截器   -->
+        <jaxrs:outInterceptors>  
+            <ref bean="outMessageInterceptor"/>  
+        </jaxrs:outInterceptors> 
+	</jaxrs:server>
+	
+    
+    <jaxws:endpoint id="helloService" implementor="com.test.server.HelloWorldServerImp" address="/helloService" />  
+<!--  cxf 请求参数为json不带类名头不识别的问题解决 -->
+	<util:list id="jsonKeys">
+         <value>app</value>
+         <value>comment</value>
+     </util:list>
+ 
+     <util:list id="jsonTypes">
+         <value>application/json</value>
+         <value>application/jettison</value>
+     </util:list>
+     <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
+         <!--
+             <property name="dropRootElement" value="true" /> <property
+             name="dropCollectionWrapperElement" value="true" /> <property
+             name="supportUnwrapped" value="true" /> <property
+             name="serializeAsArray" value="true" /> <property
+             name="attributesToElements" value="true"/>
+         -->
+         <property name="serializeAsArray" value="true" />
+         <property name="arrayKeys" ref="jsonKeys" />
+         <property name="produceMediaTypes" ref="jsonTypes" />
+         <property name="consumeMediaTypes" ref="jsonTypes" />
+         <property name="ignoreNamespaces" value="true" />
+         <property name="dropRootElement" value="true" />
+         <property name="dropCollectionWrapperElement" value="true" />
+         <property name="ignoreMixedContent" value="true" />
+         <property name="supportUnwrapped" value="true" />
+         <property name="attributesToElements" value="true" />
+     </bean>
+</beans> 

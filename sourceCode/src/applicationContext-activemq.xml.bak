@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:amq="http://activemq.apache.org/schema/core"
+xmlns:jms="http://www.springframework.org/schema/jms"
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.1.0.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-4.1.xsd"> 
+
+<!-- 使用注解 -->
+<context:annotation-config />
+<!-- 要使用注解的包,用来扫描 -->
+<context:component-scan base-package="com.c*.*"/>
+<!-- 使用嵌入式启动activemq -->
+
+<!-- <amq:broker useJmx="false" persistent="false" >
+	<amq:transportConnectors>
+		<amq:transportConnector uri="tcp://192.168.8.7:61616"/>
+	</amq:transportConnectors>
+</amq:broker> -->
+
+<!-- 为activemq创建一个连接工厂-->
+<bean id="connectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+         <property name="connectionFactory">
+             <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+                 <property name="brokerURL">
+                     <value>tcp://192.168.8.7:61616</value>
+                 </property>
+                 <property name="useAsyncSend">
+                     <value>true</value>
+                 </property>
+                 <property name="exceptionListener" ref="jmsExceptionListener"/>
+             </bean>
+         </property>
+     </bean>
+
+
+<!-- 消息转换 -->
+<bean id="messageConverter" class="com.core.activeMQ.object.ObjectMessageConverter"/>
+
+<!-- JmsTemplate 定义,使用spring的 JmsTemplate -->
+<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+ <property name="connectionFactory" ref="connectionFactory" />
+ <property name="messageConverter" ref="messageConverter" />
+</bean>
+
+  <!-- 发送消息的目的地（一个队列） -->
+ <bean id="destination" class="org.apache.activemq.command.ActiveMQQueue">
+     <!-- 设置消息队列的名字 -->
+     <constructor-arg index="0" value="logAMQueue" />
+ </bean>
+ 
+ <!-- 生产者配置 -->
+ <bean id="queueProducer" class="com.core.activeMQ.object.MessageProducer">
+     <property name="destination" ref="destination"/>
+     <property name="jmsTemplate">  
+         <list>  
+             <ref bean="jmsTemplate" /> 
+         </list>  
+     </property>
+ </bean>
+ <!-- 消息消费者配置 -->
+ <bean id="queueConsumer" class="com.core.activeMQ.object.MessageConsumer"/>
+ 
+ <bean id="queueListener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+         <constructor-arg ref="queueConsumer"/>
+         <property name="defaultListenerMethod" value="receive"/>
+         <property name="messageConverter" ref="messageConverter"/>
+     </bean>
+ 
+ <bean id="queueListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+     <property name="connectionFactory" ref="connectionFactory"/>
+     <property name="destination" ref="destination" />
+     <property name="messageListener" ref="queueListener" />
+ </bean>
+ 
+ 
+ 
+<!-- 非Object转换类型的消息监听-->
+<!-- 定义侦听器,包含属性有 可以启动的并发数量 并且定义目的地-->
+<!-- 
+id	监听器容器的Bean名称。如果没有指定，将自动生成一个Bean名称。
+destination （必须）	监听器目的地的名称，由 DestinationResolver 的策略决定。
+ref （必须）	处理对象的Bean名称
+method	处理器中被调用的方法名。如果 ref 指向 MessageListener 或者 Spring SessionAwareMessageListener，则这个属性可以被忽略。
+response-destination	默认的响应目的地是发送响应消息抵达的目的地。 这用于请求消息没有包含"JMSReplyTo"域的情况。响应目的地类型被监听器容器的"destination-type"属性决定。记住：这仅仅适用于有返回值的监听器方法，因为每个结果对象都会被转化成响应消息。
+subscription	持久订阅的名称，如果需要的话。
+selector	监听器的一个可选的消息选择器。
+ -->
+<!-- <jms:listener-container concurrency="10">
+ <jms:listener id="QueueListener" destination="logAMQueue" ref="queueListener"/>
+</jms:listener-container> -->
+</beans>

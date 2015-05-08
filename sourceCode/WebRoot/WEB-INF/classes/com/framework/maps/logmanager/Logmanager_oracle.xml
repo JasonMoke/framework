@@ -1,0 +1,213 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--  -->
+<mapper namespace="com.framework.maps.Logmanager">
+
+    <!-- insert 元素：添加一条记录 -->
+    <insert id="add" parameterType="Logmanager">
+        INSERT INTO LOGMANAGER
+        (
+            LOGID,
+            LOGTYPE,
+            LOGLEVEL,
+            LOGMESSAGE,
+            OPERATPERSON,
+            OPERATIP,
+            OPERATOBJECT,
+            OPERATTIME,
+            OPERATRESULT,
+            STATUS,
+            CREATEPERSON,
+            CREATETIME,
+            UPDATEPERSON,
+            UPDATETIME
+        ) 
+        VALUES 
+        (
+            #{LogId},
+            #{LogType},
+            #{LogLevel},
+            #{LogMessage},
+            #{OperatPerson},
+            #{OperatIp},
+            #{OperatObject},
+            #{OperatTime},
+            #{OperatResult},
+            #{Status},
+            #{CreatePerson},
+            #{CreateTime},
+            #{UpdatePerson},
+            #{UpdateTime}
+        )
+    </insert>
+    
+    <!-- insert 元素：添加多条记录 -->
+    <insert id="addList" parameterType="Logmanager">
+        INSERT INTO LOGMANAGER 
+        (
+            LOGID,
+            LOGTYPE,
+            LOGLEVEL,
+            LOGMESSAGE,
+            OPERATPERSON,
+            OPERATIP,
+            OPERATOBJECT,
+            OPERATTIME,
+            OPERATRESULT,
+            STATUS,
+            CREATEPERSON,
+            CREATETIME,
+            UPDATEPERSON,
+            UPDATETIME
+        ) 
+        VALUES 
+        <foreach collection="list" item="lt" index="index" separator=",">
+        (
+            #{LogId},
+            #{LogType},
+            #{LogLevel},
+            #{LogMessage},
+            #{OperatPerson},
+            #{OperatIp},
+            #{OperatObject},
+            #{OperatTime},
+            #{OperatResult},
+            #{Status},
+            #{CreatePerson},
+            #{CreateTime},
+            #{UpdatePerson},
+            #{UpdateTime}
+        )
+        </foreach>
+    </insert>
+    
+    <!-- update 元素：更新一条记录 -->
+    <update id="update" parameterType="Logmanager">
+        UPDATE LOGMANAGER SET 
+            LOGTYPE=#{LogType},
+            LOGLEVEL=#{LogLevel},
+            LOGMESSAGE=#{LogMessage},
+            OPERATPERSON=#{OperatPerson},
+            OPERATIP=#{OperatIp},
+            OPERATOBJECT=#{OperatObject},
+            OPERATTIME=#{OperatTime},
+            OPERATRESULT=#{OperatResult},
+            STATUS=#{Status},
+            CREATEPERSON=#{CreatePerson},
+            CREATETIME=#{CreateTime},
+            UPDATEPERSON=#{UpdatePerson},
+            UPDATETIME=#{UpdateTime}
+        WHERE 
+            LOGID=#{LogId}
+    </update>
+    
+    <!-- update 元素：更新状态 -->
+    <update id="updateStatus" parameterType="Logmanager">
+        UPDATE LOGMANAGER SET 
+            STATUS=#{Status},
+            UPDATEPERSON=#{UpdatePerson},
+            UPDATETIME=#{UpdateTime}
+        WHERE 
+            LOGID=#{LogId}
+    </update>
+    
+    <!-- update 元素：更新多条记录 -->
+    <update id="updateStatusByIds" parameterType="java.util.Map">
+        UPDATE LOGMANAGER SET 
+            STATUS=#{Status},
+            UPDATEPERSON=#{UpdatePerson},
+            UPDATETIME=#{UpdateTime}
+        WHERE 
+            LOGID IN 
+            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+                #{item}  
+            </foreach> 
+    </update>
+    
+    <!-- delete 元素：根据主键删除一条记录 -->
+    <delete id="delete" parameterType="java.lang.String">
+        DELETE FROM LOGMANAGER 
+        WHERE 
+            LOGID=#{LogId}
+    </delete>
+    
+    <!-- update 元素：逻辑删除一条记录 -->
+    <update id="deleteByLogic" parameterType="java.lang.String">
+        UPDATE LOGMANAGER SET 
+            STATUS='99',
+            UPDATEPERSON=#{UpdatePerson},
+            UPDATETIME=#{UpdateTime}
+        WHERE
+            LOGID=#{LogId}
+    </update>
+    
+    <!-- update 元素：逻辑删除多条记录 -->
+    <update id="deleteBatch" parameterType="java.util.Map">
+        UPDATE LOGMANAGER SET 
+            STATUS='99',
+            UPDATEPERSON=#{UpdatePerson},
+            UPDATETIME=#{UpdateTime}
+        WHERE 
+            LOGID IN 
+            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+                #{item}  
+            </foreach> 
+    </update>
+
+    <!-- select 元素：查询所有的记录 -->
+    <select id="findAll" resultType="Logmanager">
+        SELECT * FROM LOGMANAGER 
+        WHERE 
+            STATUS!=99
+        <if test="OperatObject != null and OperatObject !='' ">
+	     AND OPERATOBJECT LIKE '%${OperatObject}%' 
+	  	</if>
+        <if test="LogType != null and LogType !=''">
+	     AND LOGTYPE LIKE '%${LogType}%'
+	  	</if>
+        <if test="LogLevel != null and LogLevel !=''  ">
+	     AND LOGLEVEL = #{LogLevel}
+	  	</if>
+        <if test="OperatResult != null and OperatResult !=''  ">
+	        <if test="OperatResult == -1  ">
+		     AND OPERATRESULT = 0
+		  	</if>
+	        <if test="OperatResult != -1  ">
+		     AND OPERATRESULT = #{OperatResult}
+		  	</if>
+	  	</if>
+        <if test="OperatTimeStart != null and OperatTimeStart !='' ">
+         <![CDATA[
+	     AND OPERATTIME >= #{OperatTimeStart}
+	     ]]>
+	  	</if>
+        <if test="OperatTimeEnd != null and OperatTimeEnd !='' ">
+         <![CDATA[
+	      AND OPERATTIME <= #{OperatTimeEnd}
+	      ]]>
+	  	</if>
+	  	ORDER BY UPDATETIME DESC
+    </select>
+    
+    <!-- select 元素：根据主键获取数据 -->
+    <select id="findById" resultType="Logmanager">
+        SELECT * FROM LOGMANAGER 
+        WHERE 
+        (
+            LOGID=#{LogId}
+            AND STATUS!=99
+        )
+    </select>
+    
+    <!-- select 元素：获取记录条数 -->
+    <select id="count">
+        SELECT COUNT(*) FROM LOGMANAGER 
+        WHERE
+        (
+            LOGID=#{LogId}
+            AND STATUS!=99
+        )
+    </select>
+</mapper>

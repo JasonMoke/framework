@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+ "http://struts.apache.org/dtds/struts-2.1.dtd">
+<!-- struts是Struts 2配置文件的根元素 -->
+<struts>
+    <!-- Struts 2的Action必须放在指定的包空间下定义 -->
+    <package name="com.framework.action.logmanager" namespace="/logmanager" extends="struts-default">
+        <!-- 管理 -->
+        <action name="findList" class="com.framework.action.logmanager.LogmanagerAction" method="findList">
+            <result name="success">/jsp/framework/logmanager/logmanager_list.jsp</result>
+            <result name="error">/error.jsp</result>
+        </action>
+        <!-- 跳转到添加管理页面 -->
+        <action name="gotoAdd" class="com.framework.action.logmanager.LogmanagerAction" method="gotoAdd">
+            <result name="success">/jsp/framework/logmanager/logmanager_add.jsp</result>
+            <result name="error">/error.jsp</result>
+        </action>
+        <!-- 添加 -->
+        <action name="insert" class="com.framework.action.logmanager.LogmanagerAction" method="insert">
+            <result name="success" type="redirectAction">
+                <param name="actionResult">${actionResult}</param>
+	 			<param name="actionName">findList</param>
+	 		</result>
+            <result name="error">/error.jsp</result>
+        </action>
+        <!-- 详情 -->
+        <action name="detail" class="com.framework.action.logmanager.LogmanagerAction" method="detail">
+            <result name="success">/jsp/framework/logmanager/logmanager_detail.jsp</result>
+            <result name="error">/error.jsp</result>
+        </action>
+        <!-- 修改 -->
+        <action name="gotoModify" class="com.framework.action.logmanager.LogmanagerAction" method="gotoModify">
+            <result name="success">/jsp/framework/logmanager/logmanager_modify.jsp</result>
+            <result name="error">/error.jsp</result>
+        </action>
+        <!-- 更新 -->
+        <action name="update" class="com.framework.action.logmanager.LogmanagerAction" method="update">
+        	<result name="success" type="redirectAction">
+                <param name="actionResult">${actionResult}</param>
+	 			<param name="actionName">findList</param>
+	 		</result>
+            <result name="error">/error.jsp</result>
+        </action>
+        <!-- 删除 -->
+        <action name="delete" class="com.framework.action.logmanager.LogmanagerAction" method="delete">
+            <result name="success" type="redirectAction">
+                <param name="actionResult">${actionResult}</param>
+	 			<param name="actionName">findList</param>
+	 		</result>
+            <result name="error">/error.jsp</result>
+        </action>
+        <!-- 批量删除 -->
+        <action name="deleteBatch" class="com.framework.action.logmanager.LogmanagerAction" method="deleteBatch">
+            <result name="success" type="redirectAction">
+                <param name="actionResult">${actionResult}</param>
+	 			<param name="actionName">findList</param>
+	 		</result>
+            <result name="error">/error.jsp</result>
+        </action>
+    </package>
+</struts>

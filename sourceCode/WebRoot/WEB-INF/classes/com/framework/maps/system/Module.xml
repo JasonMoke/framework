@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.module">
+	<select id="getAllModulesForUser" parameterType="java.lang.String"
+		resultType="ModuleManager">
+        <![CDATA[ 
+         select R.*,S.SystemCode from  (SELECT 
+         M.ModuleId,
+         M.ModuleParent,
+         M.ModuleAddress,
+         M.Status,
+         M.ModuleNumber,
+         M.SmallLogo,
+         M.PermissionSet,
+         M.ModuleParam,
+		 M.ModuleName,
+		 M.ModuleRemark 
+		 FROM t_module M 
+		 where M.ModuleId IN
+			(SELECT ModuleId FROM t_role_module_rela WHERE RoleName IN
+				(SELECT RoleName FROM t_user_role WHERE  UserId = #{userId} AND Status  = '1')
+					AND Status  = '1')
+        ]]>
+		AND M.Status='1'
+		ORDER BY M.ModuleNumber) AS R
+		left join t_system S on S.SystemCode IN
+		(select SystemId as SystemCode from t_system_module_rela where moduleId =R.ModuleId)
+	</select>
+	<select id="findModuleByParent" resultType="ModuleManager" parameterType="Map">
+		SELECT M.ModuleId,M.ModuleParent,M.ModuleAddress,M.Status,M.ModuleNumber,M.SmallLogo,M.PermissionSet,
+	    M.CreatePerson,M.CreateTime,
+		M.ModuleName,
+		M.ModuleRemark 
+		FROM t_module M 
+		where M.Status!=99
+		<if test="ModuleParent !=null and ModuleParent !='' ">
+			and M.ModuleParent=#{ModuleParent} 
+		</if>
+	</select>
+	<select id="findAll" resultType="ModuleManager" parameterType="Map">
+		SELECT M.ModuleId,M.ModuleParent,M.ModuleAddress,M.Status,M.ModuleNumber,M.SmallLogo,M.PermissionSet,
+	    M.CreatePerson,M.CreateTime,
+		M.ModuleName,
+		M.ModuleRemark 
+		FROM t_module M 
+		where M.Status=1 
+		ORDER BY M.ModuleNumber ASC
+	</select>
+	<select id="findModuleByID" resultType="ModuleManager">
+		SELECT M.*,
+		(select i.ModuleName
+		 from t_module i 
+		 where
+		i.ModuleId=M.ModuleParent) as
+		ModuleParent 
+		FROM t_module M 
+		where M.Status=1 and M.ModuleId=#{ModuleId} ORDER BY M.ModuleNumber ASC
+	</select>
+	<select id="findModuleNameByModuleParent" resultType="ModuleManager">
+		select *
+		from t_module where ModuleId=#{ModuleParent}
+	</select>
+	<select id="findModuleParentByID" resultType="ModuleManager">
+			select * from t_module where ModuleParent in 	
+		<foreach item="item" index="index" collection="array"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+		<!-- 查询模块是否与资源、角色、应用存在关联 -->
+	<select id="findByModulId" resultType="int">
+		select (select count(*) from t_module_resource_rela where ModuleId in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		)+
+		(select count(*) from t_role_module_rela where ModuleId in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		)+
+		(select count(*) from t_system_module_rela where ModuleId in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		)>0
+		as
+		isExists
+	</select>
+	<!-- 查询模块是否与资源存在关联 -->
+	<select id="findByModulResource" resultType="int">
+		select (select count(*) from t_module_resource_rela where ModuleId = #{ModuleId}
+		)>0
+		as
+		isExists
+	</select>
+	<!-- 查询模块是否与角色存在关联 -->
+	<select id="findByModulRole" resultType="int">
+		select (select count(*) from t_role_module_rela where ModuleId = #{ModuleId}
+		)>0
+		as
+		isExists
+	</select>
+	<!-- 查询模块是否与应用存在关联 -->
+	<select id="findByModulSystem" resultType="int">
+		select (select count(*) from t_system_module_rela where ModuleId = #{ModuleId}
+		)>0
+		as
+		isExists
+	</select>
+	<insert id="add" parameterType="ModuleManager">
+		insert into
+		t_module
+		(ModuleId,ModuleName,ModuleParent,ModuleAddress,ModuleParam,ModulePrompt,ModuleTarger,HelpPath,IsEntrance,IsMenu,IsRightSet,BigLogo,SmallLogo,ModuleRemark,ModuleNumber,Status,CreatePerson,CreateTime,UpdatePerson,UpdateTime,PermissionSet)
+		values(#{ModuleId},#{ModuleName},#{ModuleParent},#{ModuleAddress},#{ModuleParam},#{ModulePrompt},#{ModuleTarger},#{HelpPath},#{IsEntrance},#{IsMenu},#{IsRightSet},#{BigLogo},#{SmallLogo},#{ModuleRemark},#{ModuleNumber},#{Status},#{CreatePerson},#{CreateTime},#{UpdatePerson},#{UpdateTime},#{PermissionSet});
+	</insert>
+	<update id="update" parameterType="ModuleManager">
+		update
+		t_module set
+		ModuleName=#{ModuleName},ModuleAddress=#{ModuleAddress},ModuleParam=#{ModuleParam},ModulePrompt=#{ModulePrompt},
+		ModuleTarger=#{ModuleTarger},HelpPath=#{HelpPath},IsEntrance=#{IsEntrance},IsMenu=#{IsMenu},IsRightSet=#{IsRightSet},BigLogo=#{BigLogo},
+		SmallLogo=#{SmallLogo},ModuleRemark=#{ModuleRemark},ModuleNumber=#{ModuleNumber},Status=#{Status},UpdatePerson=#{UpdatePerson},UpdateTime=#{UpdateTime},PermissionSet=#{PermissionSet}
+		where ModuleId=#{ModuleId};
+	</update>
+	<update id="deleteBatch" parameterType="ModuleManager">
+		update
+		t_module set
+		Status=99,UpdatePerson=#{UpdatePerson},UpdateTime=#{UpdateTime}
+		where ModuleId in 
+		<foreach item="item" index="index" collection="ids"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<update id="updateModuleStatus" parameterType="ModuleManager">
+		update
+		t_module set
+		Status=#{Status},UpdatePerson=#{UpdatePerson},UpdateTime=#{UpdateTime}
+		where ModuleId =#{ModuleId}
+	</update>
+	<!-- 查询module下有多少 -->
+	<select id="findResourcesCount" resultType="int">
+		select count(*)
+		from t_module_resource_rela 
+		where ModuleId in 
+		<foreach item="item" index="index" collection="ids"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<!-- 删除模块的资源关系 -->
+            <delete id="moduleDelResource" parameterType="ModuleManager">
+        DELETE FROM t_module_resource_rela 
+			where ModuleId =#{ModuleId} 
+    </delete>
+	<!-- 给模块设置资源 -->
+	 <!-- insert 元素：添加多条记录 -->
+    <insert id="moduleAddResource" parameterType="ModuleResourceRela">
+        INSERT INTO t_module_resource_rela 
+        (
+            UUID,
+            ModuleId,
+            ResourceId
+        ) 
+        VALUES 
+        <foreach collection="list" item="lt" index="index" separator=",">
+        (
+             #{lt.UUID},
+             #{lt.ModuleId},
+             #{lt.ResourceId}
+        )
+        </foreach>
+    </insert>
+    <!-- 查询应用下的模块 -->
+    <select id="detailModuleList" resultType="ModuleManager">
+		select m.*
+		from t_module m
+		LEFT JOIN t_system_module_rela  smr ON (smr.SystemId=#{SystemCode})
+		where m.ModuleId = smr.ModuleId
+		
+	</select>
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+<!-- struts是Struts 2配置文件的根元素 -->
+<struts>
+	<!-- Struts 2的Action必须放在指定的包空间下定义 -->
+	<package name="com.framework.action.authority" namespace="/right"
+		extends="struts-default">
+		<action name="gotoRight" class="com.framework.action.authority.RightsmanagerAction"
+			method="gotoRight">
+			<result name="success">/jsp/framework/authority/rightsmanager_index.jsp</result>
+		</action>
+		
+	</package>
+
+</struts>

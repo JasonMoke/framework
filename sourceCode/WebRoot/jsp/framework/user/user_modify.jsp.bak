@@ -1,0 +1,214 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<!--引用CW标签  -->
+<%@ taglib uri="/WEB-INF/taglib/cw" prefix="CW" %>
+<%@ taglib prefix="s" uri="/struts-tags" %>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <base href="<%=basePath%>">
+    
+    <title><s:text name="user_list_page_title" /></title>
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0">    
+	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+	<meta http-equiv="description" content="This is my page">
+	<!--jqueryUI  -->
+	<link rel="stylesheet" type="text/css" href="<%=basePath%>css/jquery-ui.css">
+	<!--系统css  -->
+	<link rel="stylesheet" type="text/css" href="<%=basePath%>css/css.css"> 
+	<!--通用js  -->
+	<script type="text/javascript" src="<%=basePath%>js/commons/common.js"></script>
+	<!--
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	-->
+<style type="text/css">
+tr{
+height:30px;
+}
+</style>
+<script type="text/javascript">
+$(function() {
+	/*初始化radio  启用 停用  */
+    $( "#radio" ).buttonset();
+});
+/*!
+ * 
+ * 绑定验证
+ * 
+ * 注意1：所有的验证规则统一在此处进行定义
+ * 注意2：当input中name使用pentity.name这样的命名方式时,其中"."与JQUERY冲突, 则rules: {"pentity.name": {}} 要加上双引号 
+ * 
+ */
+$(document).ready(
+	function() {
+		$('#addUserForm').validate(
+		{
+			messages : {
+				"userInfo.UserName" : {
+					required : '用户名不能为空',
+					rangelength : '长度应在3-32个字符之间',
+					remote:'该用户名已经存在，请重新输入'
+				},
+				"userInfo.UserPwd" : {
+					required : '密码不能为空',
+					rangelength : '长度应在6-32个字符之间'
+				},
+		        "userData.FullName" : {
+					required : '真实姓名不能为空',
+		        	maxlength: '长度应在1-32个字符之间'
+		        } 
+			} ,
+			rules : {
+		        "userInfo.UserName" : {
+					required : true,
+					rangelength:[3,32],
+					/* 需要做ajax校验的字段 */
+					remote: {
+					    url: "<%=basePath%>/userAjax/validateUser.action",     //后台处理程序
+				    type: "post",               //数据发送方式
+				    dataType: "json",           //接受数据格式   
+				    data: {                     //要传递的数据
+				        "UserName": function() {
+				            return $("#UserName").val();
+				        }
+				    }
+				}
+			},
+	        "userInfo.UserPwd" : {
+				required : true,
+				rangelength:[6,32]
+			},
+	        "userData.FullName" : {
+				required : true,
+				maxlength : 32
+			},
+	        "userData.EmailAddress" : {
+				email : true,
+				rangelength:[3,32],
+				number:true  
+			},
+	        "userData.ContactPhone" : {
+				number:true , 
+				rangelength:[3,16]
+			},
+	        "userData.OfficePhone" : {
+				number:true , 
+				rangelength:[3,16]
+			},
+	        "userData.FaxNumber" : {
+				number:true , 
+				rangelength:[3,16]
+			},
+	        "userData.ContactPhone" : {
+				number:true , 
+				rangelength:[3,16]
+			},
+	        "userData.ZipCode" : {
+				number:true 
+			}
+		}
+	});
+});
+/*主动触发校验  */
+function _validate(){
+	art.dialog.data('_validate', $("#addUserForm").valid());
+}
+function _validateUser(){
+	$.ajax({  
+	    type: "post",  
+	    async: false,
+	    url: "<%=basePath%>/userValidate/validateUser.action",  
+		    data: "UserName=" + $("#userInfo.UserName").val() ,  
+		    success: function(data){ 
+		    	var isReapeat = data[0].isReapeat;
+		    	if(isReapeat=='1'){//重复
+				    art.dialog.alert('该用户名已经存在，请重新输入');
+		    	}else if(result=='0'){//未重复
+		    		art.dialog.tips('用户名可用');
+		    	}else{
+		    		//art.dialog.tips('新增用户成功');
+		    	}
+		    }
+	});
+}
+</script>
+  </head>
+  
+  <body>
+    <form action="user/updateUser.action" name="addUserForm" id="addUserForm" method="post" target="mainFrame">
+    <input type="hidden" name="userInfo.UserId" id="userInfo.UserId" id="userInfo.UserId"  value="<s:property value="userInfoAndData.UserId" />"/>
+    <table class="writetbl" style="width:470px">
+	<tr>
+	<th style="width:130px"><s:text name="user_add_username" />：</th>
+	<td style="width:340px">
+	<input name="userInfo.UserName" id="userInfo.UserName" type="text" value="<s:property value="userInfoAndData.UserName" />">
+	</td>
+	</tr>
+	<tr>
+	<th><s:text name="user_add_status" />：</th>
+	<td>
+	<div id="radio" >
+    <input type="radio" id="radio1" name="userInfo.Status" <s:if test="%{userInfoAndData.Status == 1}">checked="checked"</s:if> value="1"><label for="radio1"><s:text name="user_list_td_userstatus_enable" /></label>
+    <input type="radio" id="radio2" name="userInfo.Status" <s:if test="%{userInfoAndData.Status == 0}">checked="checked"</s:if> value="0"><label for="radio2"><s:text name="user_list_td_userstatus_disable" /></label>
+    </div>
+	</td>
+	</tr>
+	<tr>
+	<th><s:text name="user_add_fullname" />：</th>
+	<td>
+	<input name="userData.FullName" id="userData.FullName" type="text" value="<s:property value="userInfoAndData.FullName" />">
+	</td>
+	</tr>
+	<tr>
+	<th><s:text name="user_add_contactphone" />：</th>
+	<td>
+	<input name="userData.ContactPhone" id="userData.ContactPhone" type="text" value="<s:property value="userInfoAndData.ContactPhone" />">
+	</td>
+	</tr>
+	<tr>
+	<th><s:text name="user_add_officephone" />：</th>
+	<td>
+	<input name="userData.OfficePhone" id="userData.OfficePhone" type="text" value="<s:property value="userInfoAndData.OfficePhone" />">
+	</td>
+	</tr>
+	<tr>
+	<th><s:text name="user_add_faxnumber" />：</th>
+	<td>
+	<input name="userData.FaxNumber" id="userData.FaxNumber" type="text" value="<s:property value="userInfoAndData.FaxNumber" />">
+	</td>
+	</tr>
+	<tr>
+	<th><s:text name="user_add_email" />：</th>
+	<td>
+	<input name="userData.EmailAddress" id="userData.EmailAddress" type="text" value="<s:property value="userInfoAndData.EmailAddress" />">
+	</td>
+	</tr>
+	<tr>
+	<th><s:text name="user_add_contactaddress" />：</th>
+	<td>
+	<input name="userData.ContactAddress" id="userData.ContactAddress" type="text" value="<s:property value="userInfoAndData.ContactAddress" />">
+	</td>
+	</tr>
+	<tr>
+	<th><s:text name="user_add_zipcode" />：</th>
+	<td>
+	<input name="userData.ZipCode" id="userData.ZipCode" type="text" value="<s:property value="userInfoAndData.ZipCode" />">
+	</td>
+	</tr>
+	<tr>
+	<th><s:text name="user_add_remark" />：</th>
+	<td><textarea cols="20" name="userData.UserRemark" id="userData.UserRemark" rows="4" ><s:property value="userInfoAndData.UserRemark" /></textarea></td>
+	</tr>
+	</table>
+    <input type="hidden" id="buttonH" onclick="_validate()">
+    </form>
+  </body>
+</html>

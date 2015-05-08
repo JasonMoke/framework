@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+ "http://struts.apache.org/dtds/struts-2.1.dtd">
+<!-- struts是Struts 2配置文件的根元素 -->
+<struts>
+	<!-- Struts 2的Action必须放在指定的包空间下定义 -->
+	<package name="com.framework.action.resources" namespace="/resources"
+		extends="struts-default">
+		<action name="findAll" class="com.framework.action.resources.ResourcesAction"
+			method="findAll">
+			<result name="success">/jsp/framework/resources/resources_list.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="detail" class="com.framework.action.resources.ResourcesAction"
+			method="detail">
+			<result name="success">/jsp/framework/resources/resources_detail.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="toAdd" class="com.framework.action.resources.ResourcesAction"
+			method="toAdd">
+			<result name="success">/jsp/framework/resources/resources_add.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="toUpdate" class="com.framework.action.resources.ResourcesAction"
+			method="toUpdate">
+			<result name="success">/jsp/framework/resources/resources_modify.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="insert" class="com.framework.action.resources.ResourcesAction"
+			method="insert">
+			<result name="success" type="redirectAction">
+				<param name="actionName">findAll</param>
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="update" class="com.framework.action.resources.ResourcesAction"
+			method="update">
+			<result name="success" type="redirectAction">
+				<param name="actionName">findAll</param>
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="delete" class="com.framework.action.resources.ResourcesAction"
+			method="delete">
+			<result name="success" type="redirectAction">
+				<param name="actionName">findAll</param>
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+	</package>
+	<package name="com.framework.action.resourcesValidate"
+		namespace="/resourcesAjax" extends="json-default">
+		<action name="changeStatus" class="com.framework.action.resources.ResourcesAction"
+			method="changeStatus">
+			<result name="success" type="json"></result>
+		</action>
+	</package>
+
+</struts>

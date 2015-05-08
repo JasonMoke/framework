@@ -1,0 +1,100 @@
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+<!-- struts是Struts 2配置文件的根元素 -->
+<struts>
+	<!-- Struts 2的Action必须放在指定的包空间下定义 -->
+	<package name="com.framework.action.module" namespace="/module" extends="struts-default">
+		<action name="getAllModulesForUser" class="com.framework.action.module.ModuleAction"
+			method="getAllModulesForUser">
+			<result name="success">/index.jsp</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		<action name="getModuleByCondition" class="com.framework.action.module.ModuleAction"
+			method="getModuleByCondition">
+			<result name="success">/jsp/framework/module/module_list.jsp
+			</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		<action name="detailModule" class="com.framework.action.module.ModuleAction"
+			method="detailModule">
+			<result name="success">/jsp/framework/module/module_detail.jsp
+			</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		<action name="toFind" class="com.framework.action.module.ModuleAction"
+			method="toFind">
+			<result name="success">/jsp/framework/module/module_index.jsp
+			</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		<action name="toAddModule" class="com.framework.action.module.ModuleAction"
+			method="toAddModule">
+			<result name="success">/jsp/framework/module/module_add.jsp
+			</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		<action name="toUpdateModoule" class="com.framework.action.module.ModuleAction"
+			method="toUpdateModoule">
+			<result name="success">/jsp/framework/module/module_modify.jsp
+			</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		<action name="insertModule" class="com.framework.action.module.ModuleAction"
+			method="insertModule">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">toFind</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="updateModule" class="com.framework.action.module.ModuleAction"
+			method="updateModule">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">toFind</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="deleteModule" class="com.framework.action.module.ModuleAction"
+			method="deleteModule">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">toFind</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<!-- 设置资源 -->
+		<action name="setResources" class="com.framework.action.module.ModuleAction"
+			method="setResources">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">toFind</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+	</package>
+	<package name="com.framework.action.moduleValidate"
+		namespace="/moduleAjax" extends="json-default">
+		<action name="getModuleCount" class="com.framework.action.module.ModuleAction"
+			method="getModuleCount">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="getModuleManagerCountOne" class="com.framework.action.module.ModuleAction"
+			method="getModuleManagerCountOne">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="getModuleManagerCount" class="com.framework.action.module.ModuleAction"
+			method="getModuleManagerCount">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="changeModuleStatus" class="com.framework.action.module.ModuleAction"
+			method="changeModuleStatus">
+			<result name="success" type="json"></result>
+		</action>
+	</package>
+</struts>

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.tree">
+	<select id="findModuleList" resultType="TreeEntity">
+			SELECT M.MODULEID AS
+		ID,M.MODULEPARENT AS PID,M.MODULENUMBER,D.STATUS as PARENTSTATUS,
+		(case when
+		L.MODULENAME is null then M.MODULENAME else L.MODULENAME end)AS NAME
+		FROM MODULEMANAGER M LEFT JOIN MODULEML
+		L ON (L.MODULEID=M.MODULEID AND L.LANGUAGECODE= #{locale})
+		LEFT JOIN MODULEMANAGER D ON(D.MODULEID=M.MODULEPARENT)
+		Where M.STATUS='1' and (D.STATUS is null or D.STATUS='1')
+		<if test="systemCode !=null and systemCode !='' ">
+			<if test="pid !=null and pid !='' ">
+			and M.MODULEPARENT=#{systemCode}
+			</if>
+			<if test="pid ==null or pid =='' ">
+			and M.SYSTEMCODE=#{systemCode} and M.MODULEPARENT='0'
+			</if>
+		</if>
+		ORDER BY M.MODULENUMBER
+	</select>
+	<select id="findSystemList" resultType="TreeEntity">
+		SELECT M.SYSTEMCODE AS
+		ID,M.SYSTEMNUMBER,
+		(case when	L.FULLNAME is null then M.FULLNAME else L.FULLNAME end) AS NAME
+		FROM SYSTEMMANAGER M 
+		LEFT JOIN SYSTEMML
+		L ON (L.SYSTEMCODE=M.SYSTEMCODE AND L.LANGUAGECODE= #{locale})
+		Where M.STATUS='1'
+		ORDER BY M.SYSTEMNUMBER
+	</select>
+	<select id="findRegionList" resultType="TreeEntity">
+		SELECT DICTNAME AS
+		NAME,DICTDATA1 AS ID ,DICTLISTCODE as PID
+		FROM DICTMANAGER where
+		STATUS='1' and DICTLISTCODE='Region'
+		ORDER BY DICTNUMBER
+	</select>
+	<select id="findOrganList" resultType="TreeEntity">
+		SELECT	CNAME AS NAME,  ID,	PARENT_ID AS PID 
+		FROM ORGAN
+		WHERE
+			STATUS = '1'
+		ORDER BY
+			SEQ_NUM
+	</select>
+	<select id="findOrganByUserID" resultType="TreeEntity">
+		SELECT ID,	CNAME AS NAME,	PARENT_ID AS PID
+		FROM
+			ORGAN
+		WHERE
+			ID =(
+				SELECT
+					U .ORGANID
+				FROM
+					USERDATAMANAGER U
+				WHERE
+					U .USERID = #{UserId}
+			)
+	</select>
+	
+	<select id="findRoleList" resultType="TreeEntity">
+		SELECT ROLEREMARK AS
+		NAME,ROLENAME AS ID
+		FROM ROLEMANAGER where
+		STATUS='1'
+		ORDER BY
+		ROLENUMBER
+	</select>
+	<select id="findModuleByModuleID" resultType="TreeEntity">
+		select
+		r.MODULEID as
+		ID,m.MODULENAME as NAME from RIGHTSMANAGER r INNER JOIN
+		MODULEMANAGER m on r.MODULEID=m.MODULEID where m.STATUS='1' and
+		r.ROLENAME = #{RoleName}
+	</select>
+	<select id="findRoleByUserID" resultType="TreeEntity">
+		SELECT t.USERID AS
+		NAME,t.ROLENAME AS ID
+		FROM USERROLEMANAGER t INNER JOIN
+		USERINFOMANAGER u on t.USERID=u.USERID where
+		u.USERID=#{UserId} and
+		u.STATUS =1
+	</select>
+	<select id="findUserByRole" resultType="TreeEntity">
+		SELECT t.USERID AS
+		NAME,t.ROLENAME AS ID
+		FROM USERROLEMANAGER t INNER JOIN
+		USERINFOMANAGER u on t.USERID=u.USERID where
+		u.USERID=#{UserId} and
+		u.STATUS =1
+	</select>
+	<select id="findUserByPu" resultType="TreeEntity">
+		select u.USERNAME as
+		NAME,u.USERID AS ID from USERINFOMANAGER u INNER JOIN
+		USERROLEMANAGER r on u.USERID=r.USERID where r.ROLENAME='publisher'
+		and u.STATUS=1
+	</select>
+	<select id="findUserByPuXin" resultType="TreeEntity">
+		SELECT a.FULLNAME AS
+		NAME, a.USERID AS ID,b.FULLNAME AS PID from USERDATAMANAGER a
+		left
+		join PUBLISHMANAGER b on(a.ORGANID=b.PUBLISHERID)
+		where a.USERID in
+		(select USERID from USERROLEMANAGER where
+		ROLENAME='publisher' and
+		STATUS=1)
+		and a.STATUS=1
+
+	</select>
+	<select id="findUserByRoleByOrganId" resultType="TreeEntity">
+		SELECT USERID AS
+		ID from USERDATAMANAGER where ORGANID=#{OrganId}
+		and STATUS=1
+	</select>
+	<select id="findEBookFormat" resultType="TreeEntity">
+		SELECT DICTNAME
+		AS
+		NAME,DICTDATA1 AS ID ,DICTLISTCODE as PID
+		FROM DICTMANAGER where
+		STATUS='1' and DICTLISTCODE='EbookFormat'
+		ORDER BY DICTNUMBER
+	</select>
+	<select id="findLanguage" resultType="TreeEntity">
+		SELECT DICTNAME
+		AS
+		NAME,DICTDATA1 AS ID ,DICTLISTCODE as PID
+		FROM DICTMANAGER where
+		STATUS='1' and DICTLISTCODE='Language'
+		ORDER BY DICTNUMBER
+	</select>
+	<select id="findMetadataFormat" resultType="TreeEntity">
+		SELECT DICTNAME
+		AS
+		NAME,DICTDATA1 AS ID ,DICTLISTCODE as PID
+		FROM DICTMANAGER where
+		STATUS='1' and DICTLISTCODE='MetadataFormat'
+		ORDER BY DICTNUMBER
+	</select>
+	<select id="findCoverFormat" resultType="TreeEntity">
+		SELECT DICTNAME
+		AS
+		NAME,DICTDATA1 AS ID ,DICTLISTCODE as PID
+		FROM DICTMANAGER where
+		STATUS='1' and DICTLISTCODE='CoverFormat'
+		ORDER BY DICTNUMBER
+	</select>
+	<select id="findScreenShotFormatList" resultType="TreeEntity">
+		SELECT DICTNAME
+		AS
+		NAME,DICTDATA1 AS ID ,DICTLISTCODE as PID
+		FROM DICTMANAGER where
+		STATUS='1' and DICTLISTCODE='ScreenShotFormat'
+		ORDER BY DICTNUMBER
+	</select>
+	<!-- 根据出版商Id生成资产树 -->
+	<select id="findByPublisherId" resultType="TreeEntity">
+		SELECT TITLE
+		AS
+		NAME,ASSETSID AS ID ,PUBLISHERID as PID
+		FROM ASSETSMANAGER where
+		STATUS!=99 AND PUBLISHERID=#{PublisherId} AND (TITLE LIKE
+		'%${Condition}%' OR ISBN LIKE '%${Condition}%' OR EISBN LIKE '%${Condition}%')
+		ORDER BY ASSETSID
+	</select>
+
+	<!-- 根据查询条件生成资产树 -->
+	<select id="findByConditionAssets" resultType="TreeEntity">
+		SELECT TITLE
+		AS
+		NAME,ASSETSID AS ID ,PUBLISHERID as PID
+		FROM ASSETSMANAGER where
+		STATUS!=99
+		ORDER BY ASSETSID
+	</select>
+	
+	<!-- 根据所有渠道生成资产树 -->
+	<select id="findByChannelManager" resultType="TreeEntity">
+		SELECT FULLNAME
+		AS NAME,CHANNELID AS ID
+		FROM CHANNELMANAGER where
+		STATUS!=99 
+		ORDER BY CHANNELID
+	</select>
+</mapper>

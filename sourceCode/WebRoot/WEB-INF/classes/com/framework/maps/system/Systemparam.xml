@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--  -->
+<mapper namespace="com.framework.maps.Systemparam">
+
+    <!-- insert 元素：添加一条记录 -->
+    <insert id="add" parameterType="Systemparam">
+        INSERT INTO t_system_param 
+        (
+            ParamId,
+            ParamName,
+            ParamValue,
+            ParamRemark,
+            ParamNumber,
+            SystemCode,
+            Status,
+            CreatePerson,
+            CreateTime,
+            UpdatePerson,
+            UpdateTime
+        ) 
+        VALUES 
+        (
+            #{ParamId},
+            #{ParamName},
+            #{ParamValue},
+            #{ParamRemark},
+            #{ParamNumber},
+            #{SystemCode},
+            #{Status},
+            #{CreatePerson},
+            #{CreateTime},
+            #{UpdatePerson},
+            #{UpdateTime}
+        )
+    </insert>
+    
+    <!-- insert 元素：添加多条记录 -->
+    <insert id="addList" parameterType="Systemparam">
+        INSERT INTO t_system_param 
+        (
+            ParamId,
+            ParamName,
+            ParamValue,
+            ParamRemark,
+            ParamNumber,
+            SystemCode,
+            Status,
+            CreatePerson,
+            CreateTime,
+            UpdatePerson,
+            UpdateTime
+        ) 
+        VALUES 
+        <foreach collection="list" item="lt" index="index" separator=",">
+        (
+            #{lt.ParamId},
+            #{lt.ParamName},
+            #{lt.ParamValue},
+            #{lt.ParamRemark},
+            #{lt.ParamNumber},
+            #{lt.SystemCode},
+            #{lt.Status},
+            #{lt.CreatePerson},
+            #{lt.CreateTime},
+            #{lt.UpdatePerson},
+            #{lt.UpdateTime}
+        )
+        </foreach>
+    </insert>
+    <!-- select  -->
+    <select id="findSysParamByName" resultType="Systemparam">
+        <![CDATA[
+        SELECT * FROM t_system_param 
+        WHERE 
+            ParamName=#{ParamName}
+            AND Status!=99
+        ]]>
+    </select>
+    <!-- update 元素：更新一条记录 -->
+    <update id="update" parameterType="Systemparam">
+        UPDATE t_system_param SET 
+            ParamName=#{ParamName},
+            ParamValue=#{ParamValue},
+            ParamRemark=#{ParamRemark},
+            ParamNumber=#{ParamNumber},
+            SystemCode=#{SystemCode},
+            Status=#{Status},
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE 
+            ParamId=#{ParamId}
+    </update>
+    
+    <!-- update 元素：更新状态 -->
+    <update id="updateStatus" parameterType="Systemparam">
+        UPDATE t_system_param SET 
+            Status=#{Status},
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE 
+            ParamId=#{ParamId}
+    </update>
+    
+    <!-- update 元素：更新多条记录 -->
+    <update id="updateStatusByIds" parameterType="java.util.Map">
+        UPDATE t_system_param SET 
+            Status=#{Status},
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE 
+            ParamId IN 
+            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+                #{item}  
+            </foreach> 
+    </update>
+    
+    <!-- delete 元素：根据主键删除一条记录 -->
+    <delete id="delete" parameterType="java.lang.String">
+        DELETE FROM t_system_param 
+        WHERE 
+            ParamId=#{ParamId}
+    </delete>
+    
+    <!-- update 元素：逻辑删除一条记录 -->
+    <update id="deleteByLogic" parameterType="java.lang.String">
+        UPDATE t_system_param SET 
+            Status=99,
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE
+            ParamId=#{ParamId}
+    </update>
+    
+    <!-- update 元素：逻辑删除多条记录 -->
+    <update id="deleteBatch" parameterType="java.util.Map">
+        UPDATE t_system_param SET 
+            Status=99,
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE 
+            ParamId IN 
+            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+                #{item}  
+            </foreach> 
+    </update>
+
+    <!-- select 元素：查询所有的记录 -->
+    <select id="findAll" resultType="Systemparam">
+        SELECT * FROM t_system_param 
+        WHERE 
+            Status!=99
+        <if test="ParamName != null and ParamName !='' ">
+		     AND ParamName LIKE CONCAT('%','${ParamName}','%' ) 
+		  	</if>
+	        <if test="ParamValue != null and ParamValue !=''">
+		     AND ParamValue LIKE CONCAT('%','${ParamValue}','%' ) 
+		  	</if>
+	        <if test="SystemCode != null and SystemCode !=''  ">
+		     AND SystemCode LIKE CONCAT('%','${SystemCode}','%' ) 
+		  	</if>
+    </select>
+    
+    <!-- select 元素：根据主键获取数据 -->
+    <select id="findById" resultType="Systemparam">
+        <![CDATA[
+        SELECT * FROM t_system_param 
+        WHERE 
+            ParamId=#{ParamId}
+            AND Status!=99
+        ]]>
+    </select>
+    
+    <!-- select 元素：获取记录条数 -->
+    <select id="count">
+        <![CDATA[
+        SELECT COUNT(*) FROM t_system_param 
+        WHERE
+            ParamId=#{ParamId}
+            AND Status!=99
+        ]]>
+    </select>
+</mapper>

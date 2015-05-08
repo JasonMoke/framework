@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+ "http://struts.apache.org/dtds/struts-2.1.dtd">
+<!-- struts是Struts 2配置文件的根元素 -->
+<struts>
+    <!-- Struts 2的Action必须放在指定的包空间下定义 -->
+    <package name="com.framework.action.pubmenu" namespace="/pubmenu" extends="struts-default">
+     <!-- 查询所有 -->
+        <action name="findAllList" class="com.framework.action.pubmenu.PubMenuAction" method="findAllList">
+            <result name="success">/jsp/framework/pubmenu/pubmenu_index.jsp</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <!-- 管理 -->
+        <action name="findList" class="com.framework.action.pubmenu.PubMenuAction" method="findList">
+            <result name="success">/jsp/framework/pubmenu/pubmenu_list.jsp</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <!-- 跳转到添加管理页面 -->
+        <action name="gotoAdd" class="com.framework.action.pubmenu.PubMenuAction" method="gotoAdd">
+            <result name="success">/jsp/framework/pubmenu/pubmenu_add.jsp</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <!-- 添加 -->
+        <action name="insert" class="com.framework.action.pubmenu.PubMenuAction" method="insert">
+            <result name="success" type="chain">
+                <param name="actionResult">${actionResult}</param>
+	 			<param name="actionName">findAllList</param>
+	 		</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <!-- 详情 -->
+        <action name="detail" class="com.framework.action.pubmenu.PubMenuAction" method="detail">
+            <result name="success">/jsp/framework/pubmenu/pubmenu_detail.jsp</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <!-- 修改 -->
+        <action name="gotoModify" class="com.framework.action.pubmenu.PubMenuAction" method="gotoModify">
+            <result name="success">/jsp/framework/pubmenu/pubmenu_modify.jsp</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <!-- 更新 -->
+        <action name="update" class="com.framework.action.pubmenu.PubMenuAction" method="update">
+        	<result name="success" type="chain">
+                <param name="actionResult">${actionResult}</param>
+	 			<param name="actionName">findAllList</param>
+	 		</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <!-- 删除 -->
+        <action name="delete" class="com.framework.action.pubmenu.PubMenuAction" method="delete">
+            <result name="success" type="chain">
+                <param name="actionResult">${actionResult}</param>
+	 			<param name="actionName">findAllList</param>
+	 		</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <!-- 批量删除 -->
+        <action name="deleteBatch" class="com.framework.action.pubmenu.PubMenuAction" method="deleteBatch">
+            <result name="success" type="chain">
+                <param name="actionResult">${actionResult}</param>
+	 			<param name="actionName">findAllList</param>
+	 		</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+    </package>
+    
+    <package name="com.framework.action.pubmenuJson" namespace="/pubmenuAjax" extends="json-default" >
+        <!-- 更改状态 -->
+        <action name="changeStatus" class="com.framework.action.pubmenu.PubMenuAction" method="changeStatus">
+	    	<result name="success" type="json"></result>
+	    	<result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+	 	</action>
+	 	<!-- 是否有首选项 -->
+	 	<action name="selectIsPreferences" class="com.framework.action.pubmenu.PubMenuAction" method="selectIsPreferences">
+	    	<result name="success" type="json"></result>
+	    	<result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+	 	</action>
+	</package>
+</struts>

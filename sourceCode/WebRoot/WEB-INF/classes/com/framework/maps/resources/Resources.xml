@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.maps.resources">
+	<select id="findAll" resultType="Resources">
+		select * from t_resources where Status!=99
+		<if test="resourcesName !=null and resourcesName !='' ">
+			and ResourcesName LIKE CONCAT(CONCAT('%', #{resourcesName}), '%')
+		</if>
+		<if test="resourcesUrl !=null and resourcesUrl !='' ">
+			and ResourcesUrl LIKE CONCAT(CONCAT('%', #{resourcesUrl}), '%')
+		</if>
+	</select>
+	<select id="getAllResourcesForUser" parameterType="java.lang.String"
+		resultType="Resources">
+        <![CDATA[ 
+         SELECT M.*
+		 FROM t_resources M 
+		 where M.ResourcesId IN
+			(SELECT ResourceId FROM t_role_resource_rela WHERE RoleName IN
+				(SELECT RoleName FROM t_user_role WHERE  UserId = #{userId} AND Status  = '1')
+					AND Status  = '1')
+        ]]>
+		AND M.Status='1'
+		ORDER BY M.ResourcesNumber
+	</select>
+	
+	<select id="findModuleResourceRela" resultType="ModuleResourceRela">
+		select * from t_module_resource_rela
+	</select>
+	
+	<select id="detail" resultType="Resources">
+		select * from t_resources where ResourcesId=#{resourcesId}
+	</select>
+	<insert id="insert" parameterType="Resources">
+		insert into t_resources
+		(ResourcesId,ResourcesName,ResourcesUrl,PermissionSet,ResourcesNumber,IsMenu,Status,CreatePerson,CreateTime,UpdatePerson,UpdateTime)
+		values(#{resourcesId},#{resourcesName},#{resourcesUrl},#{permissionSet},#{resourcesNumber},#{isMenu},#{Status},#{CreatePerson},#{CreateTime},#{UpdatePerson},#{UpdateTime});
+	</insert>
+	<update id="update" parameterType="Resources">
+		update
+		t_resources set
+		ResourcesName=#{resourcesName},ResourcesUrl=#{resourcesUrl},PermissionSet=#{permissionSet},ResourcesNumber=#{resourcesNumber},Status=#{Status},IsMenu=#{isMenu},UpdatePerson=#{UpdatePerson},UpdateTime=#{UpdateTime}
+		where ResourcesId=#{resourcesId};
+	</update>
+	<update id="updateStatus" parameterType="Resources">
+		update
+		t_resources set
+		Status=#{Status},UpdatePerson=#{UpdatePerson},UpdateTime=#{UpdateTime}
+		where ResourcesId=#{resourcesId};
+	</update>
+	<delete id="delete" parameterType="Resources">
+		delete from t_resources where ResourcesId in
+		<foreach item="item" index="index" collection="id"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		;
+	</delete>
+</mapper>

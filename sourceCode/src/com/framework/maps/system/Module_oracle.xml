@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.module">
+	<select id="getAllModulesForUser" parameterType="Map" resultType="ModuleManager">
+        <![CDATA[ 
+         SELECT *
+		FROM MODULEMANAGER M LEFT JOIN MODULEML L ON (M.MODULEID=L.MODULEID AND L.LANGUAGECODE=#{locale})
+		where M.MODULEID IN
+			(SELECT MODULEID FROM RIGHTSMANAGER WHERE ROLENAME IN
+				(SELECT ROLENAME FROM USERROLEMANAGER WHERE  USERID = #{userId} AND STATUS  = '1')
+					AND STATUS  = '1')
+        ]]>
+		AND M.STATUS='1'
+		<if test="SystemCode !=null and SystemCode !='' ">
+		AND M.SystemCode=#{SystemCode}
+		</if>
+		ORDER BY M.MODULENUMBER
+	</select>
+	<select id="findModuleByParent" resultType="ModuleManager">
+		SELECT M.MODULEID,M.MODULEPARENT,M.MODULEADDRESS,M.STATUS,M.MODULENUMBER,M.SMALLLOGO,M.SystemCode,
+	    M.CREATEPERSON,M.CREATETIME,
+		(CASE WHEN L.MODULENAME IS NULL THEN M.MODULENAME ELSE L.MODULENAME END) as MODULENAME,
+		(CASE WHEN L.MODULEREMARK IS NULL THEN M.MODULEREMARK ELSE L.MODULEREMARK END) as MODULEREMARK
+		FROM MODULEMANAGER M LEFT JOIN MODULEML L ON (M.MODULEID=L.MODULEID AND L.LANGUAGECODE=#{locale})
+		where M.STATUS=1 
+		<if test="ModuleParent !=null and ModuleParent !='' ">
+			and M.MODULEPARENT=#{ModuleParent} 
+		</if>
+		<if test="SystemCode !=null and SystemCode !='' ">
+			and M.SYSTEMCODE=#{SystemCode}  and  M.MODULEPARENT='0'
+		</if>
+		ORDER BY M.MODULENUMBER ASC
+	</select>
+	<select id="findModuleByID" resultType="ModuleManager">
+		SELECT M.MODULEID,(select (CASE WHEN L.MODULENAME IS NULL THEN i.MODULENAME ELSE L.MODULENAME END) as MODULENAME
+		 from MODULEMANAGER i 
+		LEFT JOIN MODULEML L ON (i.MODULEID=L.MODULEID AND L.LANGUAGECODE=#{locale}) where
+		i.MODULEID=M.MODULEPARENT) as
+		MODULEPARENT,M.MODULEADDRESS,M.STATUS,M.MODULENUMBER,M.SMALLLOGO,
+	    M.CREATEPERSON,M.CREATETIME,M.SYSTEMCODE,M.MODULEPARAM,M.MODULEPROMPT,M.MODULETARGER,
+		M.HELPPATH,M.ISENTRANCE,M.ISMENU,M.ISRIGHTSET,
+		(CASE WHEN L.MODULENAME IS NULL THEN M.MODULENAME ELSE L.MODULENAME END) as MODULENAME,
+		(CASE WHEN L.MODULEREMARK IS NULL THEN M.MODULEREMARK ELSE L.MODULEREMARK END) as MODULEREMARK
+		FROM MODULEMANAGER M LEFT JOIN MODULEML L ON (M.MODULEID=L.MODULEID AND L.LANGUAGECODE='en_US')
+		where M.STATUS=1 and M.MODULEID=#{ModuleId} ORDER BY M.MODULENUMBER ASC
+	</select>
+	<select id="findModuleNameByModuleParent" resultType="ModuleManager">
+		select *
+		from MODULEMANAGER where MODULEID=#{ModuleParent}
+	</select>
+	<select id="findModuleParentByID" resultType="ModuleManager">
+			select * from MODULEMANAGER where MODULEPARENT in 	
+		<foreach item="item" index="index" collection="array"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<insert id="add" parameterType="ModuleManager">
+		insert into
+		MODULEMANAGER
+		(MODULEID,MODULENAME,MODULEPARENT,MODULEADDRESS,MODULEPARAM,MODULEPROMPT,MODULETARGER,HELPPATH,ISENTRANCE,ISMENU,ISRIGHTSET,BIGLOGO,SMALLLOGO,MODULEREMARK,MODULENUMBER,SYSTEMCODE,STATUS,CREATEPERSON,CREATETIME,UPDATEPERSON,UPDATETIME)
+		values(#{ModuleId},#{ModuleName},#{ModuleParent},#{ModuleAddress},#{ModuleParam},#{ModulePrompt},#{ModuleTarger},#{HelpPath},#{IsEntrance},#{IsMenu},#{IsRightSet},#{BigLogo},#{SmallLogo},#{ModuleRemark},#{ModuleNumber},#{SystemCode},#{Status},#{CreatePerson},#{CreateTime},#{UpdatePerson},#{UpdateTime})
+	</insert>
+	<update id="update" parameterType="ModuleManager">
+		update
+		MODULEMANAGER set
+		MODULENAME=#{ModuleName},MODULEADDRESS=#{ModuleAddress},MODULEPARAM=#{ModuleParam},MODULEPROMPT=#{ModulePrompt},
+		MODULETARGER=#{ModuleTarger},HELPPATH=#{HelpPath},ISENTRANCE=#{IsEntrance},ISMENU=#{IsMenu},ISRIGHTSET=#{IsRightSet},BIGLOGO=#{BigLogo},
+		SMALLLOGO=#{SmallLogo},MODULEREMARK=#{ModuleRemark},MODULENUMBER=#{ModuleNumber},SYSTEMCODE=#{SystemCode},STATUS=#{Status},UPDATEPERSON=#{UpdatePerson},UPDATETIME=#{UpdateTime}
+		where MODULEID=#{ModuleId}
+	</update>
+	<update id="deleteBatch" parameterType="ModuleManager">
+		update
+		MODULEMANAGER set
+		STATUS=99,UPDATEPERSON=#{UpdatePerson},UPDATETIME=#{UpdateTime}
+		where MODULEID in 
+		<foreach item="item" index="index" collection="ids"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<update id="updateModuleStatus" parameterType="ModuleManager">
+		update
+		MODULEMANAGER set
+		STATUS=#{Status},UPDATEPERSON=#{UpdatePerson},UPDATETIME=#{UpdateTime}
+		where MODULEID =#{ModuleId}
+	</update>
+</mapper>

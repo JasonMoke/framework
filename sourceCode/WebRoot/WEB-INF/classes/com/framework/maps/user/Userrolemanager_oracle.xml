@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- -->
+<mapper namespace="com.framework.maps.Userrolemanager">
+
+   <!-- insert 元素：添加一条记录 -->
+    <insert id="add" parameterType="Userrolemanager">
+        INSERT INTO USERROLEMANAGER 
+        (
+            USERROLEID,
+            USERID,
+            ROLENAME,
+            STATUS,
+            CREATEPERSON,
+            CREATETIME,
+            UPDATEPERSON,
+            UPDATETIME
+        ) 
+        VALUES 
+        (
+            #{UserRoleId},
+            #{UserId},
+            #{RoleName},
+            #{Status},
+            #{CreatePerson},
+            #{CreateTime},
+            #{UpdatePerson},
+            #{UpdateTime}
+        )
+    </insert>
+	<!-- insert 元素：添加多条记录 -->
+	<insert id="addList" parameterType="Userrolemanager">
+		INSERT INTO USERROLEMANAGER
+		(
+            USERROLEID,
+            USERID,
+            ROLENAME,
+            STATUS,
+            CREATEPERSON,
+            CREATETIME,
+            UPDATEPERSON,
+            UPDATETIME
+		)
+		VALUES
+		<foreach collection="list" item="lt" index="index" separator=",">
+			(
+			#{lt.UserRoleId},
+			#{lt.UserId},
+			#{lt.RoleName},
+			#{lt.Status},
+			#{lt.CreatePerson},
+			#{lt.CreateTime},
+			#{lt.UpdatePerson},
+			#{lt.UpdateTime}
+			)
+		</foreach>
+	</insert>
+	<!-- update 元素：更新多条记录 -->
+	<update id="updateUserByPuid" parameterType="java.util.Map">
+		UPDATE USERDATAMANAGER SET
+		<foreach collection="list" item="lt" index="index" separator=",">
+		UPDATEPERSON=#{lt.UpdatePerson},
+		UPDATETIME=#{lt.UpdateTime},
+		ORGANID=#{lt.OrganId}
+		</foreach>
+		WHERE
+		USERID IN
+		(
+		<foreach collection="list" item="lt" index="index" separator=",">
+		#{lt.UserId}
+		</foreach>
+		)
+	</update>
+	<update id="updateUserByOrganIdisNull" parameterType="java.lang.String">
+		update
+		USERDATAMANAGER set
+		ORGANID=null
+		where ORGANID=#{OrganId};
+	</update>
+
+	<!-- delete 元素：根据主键删除一条记录 -->
+	<delete id="delete" parameterType="java.lang.String">
+		DELETE FROM USERROLEMANAGER
+		WHERE
+		USERROLEID=#{UserRoleId}
+	</delete>
+
+	<delete id="deleteUserRole" parameterType="java.lang.String">
+		delete from
+		USERROLEMANAGER where USERID=#{UserId}
+	</delete>
+</mapper>

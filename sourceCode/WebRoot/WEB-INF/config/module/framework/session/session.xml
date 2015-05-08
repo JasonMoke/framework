@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+<!-- struts是Struts 2配置文件的根元素 -->
+<struts>
+	<!-- Struts 2的Action必须放在指定的包空间下定义 -->
+	<package name="com.framework.action.session" namespace="/session" extends="struts-default">
+		<!-- 获取在线人数列表 -->
+		<action name="findOnLineList" class="com.framework.action.session.SessionAction" 
+		method="findOnLineList">
+			<result name="success">/jsp/framework/session/session_list.jsp</result>
+		</action>
+		<!-- 强制踢人  -->
+		<action name="forceLogout" class="com.framework.action.session.SessionAction" 
+		method="forceLogout">
+			<result name="success" type="redirectAction">
+				<param name="actionName">findOnLineList</param>
+			</result>
+			<result name="error">/error.jsp</result>
+		</action>
+	</package>
+</struts>

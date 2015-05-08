@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+ "http://struts.apache.org/dtds/struts-2.1.dtd">
+<!-- struts是Struts 2配置文件的根元素 -->
+<struts>
+	<!-- Struts 2的Action必须放在指定的包空间下定义 -->
+	<package name="com.framework.action.user" namespace="/user"
+		extends="struts-default">
+		<action name="userManager" class="com.framework.action.user.UserAction" method="userManager">
+            <result name="success">/jsp/framework/user/user_index.jsp</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <action name="findUserListByOrganId" class="com.framework.action.user.UserAction"
+			method="findUserListByOrganId">
+			<result name="success">/jsp/framework/user/user_list.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+        <action name="getUserByCondition" class="com.framework.action.user.UserAction"
+			method="getUserByCondition">
+			<result name="success">/jsp/framework/user/user_list.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="getAllUser" class="com.framework.action.user.UserAction"
+			method="getAllUser">
+			<result name="success">/jsp/framework/user/user_list.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="toAddUser" class="com.framework.action.user.UserAction"
+			method="toAddUser">
+			<result name="success">/jsp/framework/user/user_add.jsp</result>
+		</action>
+		<action name="toUserAccount" class="com.framework.action.user.UserAction"
+			method="toUserAccount">
+			<result name="success">/jsp/framework/user/user_account.jsp</result>
+		</action>
+		<action name="addUserAccount" class="com.framework.action.user.UserAction"
+			method="addUserAccount">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">getAllUser</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="selOrgan" class="com.framework.action.user.UserAction"
+			method="selOrgan">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">userManager</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="toUpdatePwd" class="com.framework.action.user.UserAction"
+			method="toUpdatePwd">
+			<result name="success">/jsp/framework/user/update_pwd.jsp</result>
+		</action>
+		<action name="addUser" class="com.framework.action.user.UserAction"
+			method="addUser">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">getAllUser</param>
+			</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		<action name="updateUser" class="com.framework.action.user.UserAction"
+			method="updateUser">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">getAllUser</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="updateHomeUser" class="com.framework.action.user.UserAction"
+			method="updateHomeUser">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">modifyHomeUser</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="deleteUser" class="com.framework.action.user.UserAction"
+			method="deleteUser">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">getAllUser</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="selRoleByUsers" class="com.framework.action.user.UserAction"
+			method="selRoleByUsers">
+			<result name="success" type="redirectAction">
+				<param name="actionName">gotoAuthorize.action</param>
+				<param name="namespace">/authorize</param>  
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="logoutAccount" class="com.framework.action.user.UserAction"
+			method="logoutAccount">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">getAllUser</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="detailUser" class="com.framework.action.user.UserAction"
+			method="detailUser">
+			<result name="success">/jsp/framework/user/user_detail.jsp</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		<action name="modifyUser" class="com.framework.action.user.UserAction"
+			method="modifyUser">
+			<result name="success">/jsp/framework/user/user_modify.jsp</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		<action name="modifyHomeUser" class="com.framework.action.user.UserAction"
+			method="modifyHomeUser">
+			<result name="success">/jsp/framework/user/user_homemodify.jsp</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="selRole" class="com.framework.action.user.UserAction"
+			method="selRole">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">userManager</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+	</package>
+	<package name="com.framework.action.userValidate" namespace="/userAjax"
+		extends="json-default">
+		<action name="validateUser" class="com.framework.action.user.UserAction"
+			method="validateUser">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="validateUserPwd" class="com.framework.action.user.UserAction"
+			method="validateUserPwd">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="validateUserStatus" class="com.framework.action.user.UserAction"
+			method="validateUserStatus">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="resetPwd" class="com.framework.action.user.UserAction"
+			method="resetPwd">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="changeStatus" class="com.framework.action.user.UserAction"
+			method="changeStatus">
+			<result name="success" type="json"></result>
+		</action>
+	</package>
+</struts>

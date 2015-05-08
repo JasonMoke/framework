@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+ "http://struts.apache.org/dtds/struts-2.1.dtd">
+<!-- struts是Struts 2配置文件的根元素 -->
+<struts>
+	<!-- Struts 2的Action必须放在指定的包空间下定义 -->
+	<package name="com.framework.action.tree" namespace="/tree" extends="struts-default">
+		<action name="regionTree" class="com.framework.action.tree.TreeAction"
+			method="regionTree">
+			<result name="success">/jsp/framework/include/region_tree.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="rightModuleTree" class="com.framework.action.tree.TreeAction"
+			method="rightModuleTree">
+			<result name="success">/jsp/framework/role/right_module_tree.jsp
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="organUserTree" class="com.framework.action.tree.TreeAction"
+			method="organUserTree">
+			<result name="success">/jsp/framework/organ/organ_user_tree.jsp
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="RoleTree" class="com.framework.action.tree.TreeAction"
+			method="RoleTree">
+			<result name="roleUserTree">/jsp/framework/user/right_role_tree.jsp</result>
+			<result name="roleGroupTree">/jsp/framework/rolegroup/role_tree.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="roleGroupRoleTree" class="com.framework.action.tree.TreeAction"
+			method="roleGroupRoleTree">
+			<result name="success">/jsp/framework/rolegroup/rolegroup_role_tree.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="rightUserTree" class="com.framework.action.tree.TreeAction"
+			method="rightUserTree">
+			<result name="success">/jsp/framework/publishers/rightUser_tree.jsp
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="OrganTree" class="com.framework.action.tree.TreeAction"
+			method="OrganTree">
+			<result name="success">/jsp/framework/organ/organ_left_tree.jsp
+			</result>
+			<result name="list">/jsp/framework/organ/organ_list_tree.jsp
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="selOrganTree" class="com.framework.action.tree.TreeAction"
+			method="selOrganTree">
+			<result name="success">/jsp/framework/organ/selorgan_tree.jsp
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="OrganTreeForUserList" class="com.framework.action.tree.TreeAction"
+			method="OrganTreeForUserList">
+			<result name="success">/jsp/framework/user/right_organ_for_user_tree.jsp
+			</result>
+			<result name="list">/jsp/framework/organ/organ_list_tree.jsp
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="resourcesTree" class="com.framework.action.tree.TreeAction"
+			method="resourcesTree">
+			<result name="success">/jsp/framework/module/module_resources_tree.jsp
+			</result>
+			<result name="meun">/jsp/framework/pubmenu/pumenu_resources_tree.jsp
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="pumenuTree" class="com.framework.action.tree.TreeAction"
+			method="pumenuTree">
+			<result name="success">/jsp/framework/pubmenu/pumenu_tree.jsp
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="moduleApplicationTree" class="com.framework.action.tree.TreeAction"
+			method="moduleApplicationTree">
+			<result name="success">/jsp/framework/module/module_resources_tree.jsp
+			</result>
+			<result name="meun">/jsp/framework/pubmenu/pubmenu_module_tree.jsp
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="RegionTree" class="com.framework.action.tree.TreeAction"
+			method="RegionTree">
+			<result name="success">/jsp/framework/publishers/publisher_tree.jsp
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<!-- 模块树 -->
+		<action name="selModuleTree" class="com.framework.action.tree.TreeAction"
+			method="selModuleTree">
+			<result name="success">/jsp/framework/module/module_add_tree.jsp
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<!-- 左侧模块树 -->
+		<action name="leftModuleTree" class="com.framework.action.tree.TreeAction"
+			method="selModuleTree">
+			<result name="success">/jsp/framework/module/module_tree.jsp
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<!-- 左侧菜单树 -->
+		<action name="leftPubMenuTree" class="com.framework.action.tree.TreeAction"
+			method="leftPubMenuTree">
+			<result name="success">/jsp/framework/pubmenu/pubmenu_left_tree.jsp
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+	</package>
+
+	<package name="com.framework.action.treeJSON" namespace="/treeJSON" extends="json-default">
+		<action name="moduleTree2" class="com.framework.action.user.UserAction"
+			method="validateUser">
+			<result name="success" type="json"></result>
+		</action>
+		<!-- <action name="moduleTree" class="com.framework.action.tree.TreeAction"
+			method="moduleTree">
+			<result name="success" type="json"></result>
+			<result name="input">/error.jsp</result>
+		</action> -->
+		<action name="moduleTree" class="com.framework.action.tree.TreeAction"
+			method="moduleTree">
+			<result name="success" type="json"></result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="rightModuleTree" class="com.framework.action.tree.TreeAction"
+			method="rightModuleTree">
+			<result name="success" type="json"></result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="allocateResourceTree" class="com.framework.action.tree.TreeAction"
+			method="allocateResourceTree">
+			<result name="success" type="json"></result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="organUserTree" class="com.framework.action.tree.TreeAction"
+			method="organUserTree">
+			<result name="success" type="json"></result>
+			<result name="input">/error.jsp</result>
+		</action>
+	</package>
+</struts>

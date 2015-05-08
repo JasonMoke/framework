@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--  -->
+<mapper namespace="com.framework.maps.roleresourcerela">
+
+    <!-- insert 元素：添加一条记录 -->
+    <insert id="add" parameterType="RoleResourceRela">
+        INSERT INTO t_role_resource_rela 
+        (
+            UUID,
+            RoleName,
+            ResourceId,
+            Status,
+            CreatePerson,
+            CreateTime,
+            UpdatePerson,
+            UpdateTime
+        ) 
+        VALUES 
+        (
+         #{UUID},
+         #{RoleName},
+         #{ResourceId},
+         #{Status},
+         #{CreatePerson},
+         #{CreateTime},
+         #{UpdatePerson},
+         #{UpdateTime}
+        )
+    </insert>
+    
+    <!-- insert 元素：添加多条记录 -->
+    <insert id="addList" parameterType="RoleResourceRela">
+        INSERT INTO t_role_resource_rela 
+        (
+            UUID,
+            RoleName,
+            ResourceId,
+            Status,
+            CreatePerson,
+            CreateTime,
+            UpdatePerson,
+            UpdateTime
+        ) 
+        VALUES 
+        <foreach collection="list" item="lt" index="index" separator=",">
+        (
+             #{lt.UUID},
+             #{lt.RoleName},
+             #{lt.ResourceId},
+             #{lt.Status},
+             #{lt.CreatePerson},
+             #{lt.CreateTime},
+             #{lt.UpdatePerson},
+             #{lt.UpdateTime}
+        )
+        </foreach>
+    </insert>
+    
+    <!-- update 元素：更新一条记录 -->
+    <update id="update" parameterType="RoleResourceRela">
+        UPDATE t_role_resource_rela SET 
+             UUID=#{UUID},
+             RoleName=#{RoleName},
+             ResourceId=#{ResourceId},
+             Status=#{Status},
+             UpdatePerson=#{UpdatePerson},
+             UpdateTime=#{UpdateTime}
+        WHERE 
+            UUID=#{UUID}
+    </update>
+    
+    <!-- update 元素：更新状态 -->
+    <update id="updateStatus" parameterType="RoleResourceRela">
+        UPDATE t_role_resource_rela SET 
+            Status=#{Status},
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE 
+            UUID=#{UUID}
+    </update>
+    
+    <!-- update 元素：更新多条记录 -->
+    <update id="updateStatusByIds" parameterType="java.util.Map">
+        UPDATE t_role_resource_rela SET 
+            Status=#{Status},
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE 
+            UUID IN 
+            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+                #{item}  
+            </foreach> 
+    </update>
+    
+    <!-- delete 元素：根据主键删除一条记录 -->
+    <delete id="delete" parameterType="java.lang.String">
+        DELETE FROM t_role_resource_rela 
+        WHERE 
+            UUID=#{UUID}
+    </delete>
+     <delete id="deleteByRoleName" parameterType="java.lang.String">
+        DELETE FROM t_role_resource_rela 
+        WHERE 
+            RoleName=#{roleName}
+        and ResourceId in
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+                #{item}  
+        </foreach> 
+    </delete>
+    <!-- update 元素：逻辑删除一条记录 -->
+    <update id="deleteByLogic" parameterType="java.lang.String">
+        UPDATE t_role_resource_rela SET 
+            Status=99,
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE
+            UUID=#{UUID}
+    </update>
+    
+    <!-- update 元素：逻辑删除多条记录 -->
+    <update id="deleteBatch" parameterType="java.util.Map">
+        UPDATE t_role_resource_rela SET 
+            Status=99,
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE 
+            UUID IN 
+            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+                #{item}  
+            </foreach> 
+    </update>
+
+    <!-- select 元素：查询所有的记录 -->
+    <select id="findAll" resultType="RoleResourceRela">
+        
+        SELECT * FROM t_role_resource_rela 
+        WHERE 
+            Status!=99
+             <if test="UUID != null and UUID !='' ">
+		     AND UUID LIKE CONCAT('%','${UUID}','%' ) 
+		  	</if>   
+             <if test="RoleName != null and RoleName !='' ">
+		     AND RoleName LIKE CONCAT('%','${RoleName}','%' ) 
+		  	</if>   
+             <if test="ResourceId != null and ResourceId !='' ">
+		     AND ResourceId LIKE CONCAT('%','${ResourceId}','%' ) 
+		  	</if>   
+             <if test="Status != null and Status !='' ">
+		     AND Status LIKE CONCAT('%','${Status}','%' ) 
+		  	</if>   
+             <if test="CreatePerson != null and CreatePerson !='' ">
+		     AND CreatePerson LIKE CONCAT('%','${CreatePerson}','%' ) 
+		  	</if>   
+             <if test="CreateTime != null and CreateTime !='' ">
+		     AND CreateTime LIKE CONCAT('%','${CreateTime}','%' ) 
+		  	</if>   
+             <if test="UpdatePerson != null and UpdatePerson !='' ">
+		     AND UpdatePerson LIKE CONCAT('%','${UpdatePerson}','%' ) 
+		  	</if>   
+             <if test="UpdateTime != null and UpdateTime !='' ">
+		     AND UpdateTime LIKE CONCAT('%','${UpdateTime}','%' ) 
+		  	</if>   
+    </select>
+    
+    <!-- select 元素：根据主键获取数据 -->
+    <select id="findById" resultType="RoleResourceRela">
+        <![CDATA[
+        SELECT * FROM t_role_resource_rela 
+        WHERE 
+            UUID=#{UUID}
+            AND Status!=99
+        ]]>
+    </select>
+    
+    <!-- select 元素：获取记录条数 -->
+    <select id="count">
+        <![CDATA[
+        SELECT COUNT(*) FROM t_role_resource_rela 
+        WHERE
+            UUID=#{UUID}
+            AND Status!=99
+        ]]>
+    </select>
+</mapper>

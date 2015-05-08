@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+    xmlns:jaxws="http://cxf.apache.org/jaxws"  
+    xsi:schemaLocation="http://www.springframework.org/schema/beans  
+                       http://www.springframework.org/schema/beans/spring-beans.xsd  
+                       http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">  
+      
+    <import resource="classpath:META-INF/cxf/cxf.xml" />  
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />  
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />  
+  	<!-- 上面3个 import 为导入  CXF 的 Bean 定义文件--> 
+  	
+  	<!-- 定义具体实现的 Bean ，这个 Bean 的定义与 Spring 普通的 Bean 定义是一样的 --> 
+    <bean id="client" class="com.test.server.IHelloWorldServer" factory-bean="clientFactory" factory-method="create" />  
+	
+    <bean id="clientFactory" class="org.apache.cxf.jaxws.JaxWsProxyFactoryBean">  
+        <property name="serviceClass" value="com.test.server.IHelloWorldServer" />
+        <!-- address 的属性值 value 要与服务器端  applicationContext-server.xml 配置中的
+             <jaxws:endpoint id="helloService" implementor="com.test.server.HelloWorldServerImp" address="/helloService" />  
+         	   的 address 对应起来。 --> 
+        <property name="address" value="http://localhost:8888/framework/ws/helloService" />  
+    </bean>  
+</beans> 

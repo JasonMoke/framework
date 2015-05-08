@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 日志管理注册 -->
+<framework>
+	<logConfig logType="登陆" logLevel="4" operatObject="登陆" urlPattern="com.framework.action.login.LoginAction.submitLogin" />
+	<logConfig logType="添加用户" logLevel="3" operatObject="用户管理" urlPattern="com.framework.action.user.UserAction.addUser" />
+	
+	<logConfig logType="添加日志" logLevel="2" operatObject="日志管理" urlPattern="com.framework.action.logmanager.LogmanagerAction.insert" />
+	<logConfig logType="修改日志" logLevel="2" operatObject="日志管理" urlPattern="com.framework.action.logmanager.LogmanagerAction.update" />
+	<logConfig logType="删除日志" logLevel="3" operatObject="日志管理" urlPattern="com.framework.action.logmanager.LogmanagerAction.delete" />
+	<logConfig logType="批量删除日志" logLevel="3" operatObject="日志管理" urlPattern="com.framework.action.logmanager.LogmanagerAction.deleteBatch" />
+	<logConfig logType="修改日志状态" logLevel="2" operatObject="日志管理" urlPattern="com.framework.action.logmanager.LogmanagerAction.changeStatus" />
+	
+	<logConfig logType="添加组织" logLevel="2" operatObject="组织管理" urlPattern="com.framework.action.organ.OrganAction.insert" />
+	<logConfig logType="修改组织" logLevel="2" operatObject="组织管理" urlPattern="com.framework.action.organ.OrganAction.update" />
+	<logConfig logType="删除组织" logLevel="3" operatObject="组织管理" urlPattern="com.framework.action.organ.OrganAction.delete" />
+	<logConfig logType="批量删除组织" logLevel="3" operatObject="组织管理" urlPattern="com.framework.action.organ.OrganAction.deleteBatch" />
+	<logConfig logType="更改组织状态" logLevel="2" operatObject="组织管理" urlPattern="com.framework.action.organ.OrganAction.changeStatus" />
+	
+	<logConfig logType="修改资源" logLevel="2" operatObject="资源管理" urlPattern="com.framework.action.resources.ResourcesAction.update" />
+	<logConfig logType="变更资源状态" logLevel="2" operatObject="资源管理" urlPattern="com.framework.action.resources.ResourcesAction.changeStatus" />
+	<logConfig logType="删除资源" logLevel="3" operatObject="资源管理" urlPattern="com.framework.action.resources.ResourcesAction.delete" />
+	<logConfig logType="新增资源" logLevel="2" operatObject="资源管理" urlPattern="com.framework.action.resources.ResourcesAction.insert" />
+	
+	<logConfig logType="新增字典集" logLevel="2" operatObject="字典集管理" urlPattern="com.framework.action.dict.DictAction.insertDictList" />
+	<logConfig logType="新增字典" logLevel="2" operatObject="字典管理" urlPattern="com.framework.action.dict.DictAction.insertDictManager" />
+	<logConfig logType="删除字典集" logLevel="3" operatObject="字典集管理" urlPattern="com.framework.action.dict.DictAction.deleteDictList" />
+	<logConfig logType="删除字典" logLevel="3" operatObject="字典管理" urlPattern="com.framework.action.dict.DictAction.deleteDictmanager" />
+	<logConfig logType="修改字典集" logLevel="2" operatObject="字典集管理" urlPattern="com.framework.action.dict.DictAction.updateDictList" />
+	<logConfig logType="变更字典集状态" logLevel="2" operatObject="字典集管理" urlPattern="com.framework.action.dict.DictAction.changeStatus" />
+	<logConfig logType="变更字典状态" logLevel="2" operatObject="字典管理" urlPattern="com.framework.action.dict.DictAction.managerchangeStatus" />
+	<logConfig logType="修改字典" logLevel="2" operatObject="字典管理" urlPattern="com.framework.action.dict.DictAction.updateDictmanager" />
+	
+	<logConfig logType="新增模块" logLevel="2" operatObject="模块管理" urlPattern="com.framework.action.module.ModuleAction.insertModule" />
+	<logConfig logType="修改模块" logLevel="2" operatObject="模块管理" urlPattern="com.framework.action.module.ModuleAction.updateModule" />
+	<logConfig logType="删除模块" logLevel="3" operatObject="模块管理" urlPattern="com.framework.action.module.ModuleAction.deleteModule" />
+	<logConfig logType="变更模块状态" logLevel="2" operatObject="模块管理" urlPattern="com.framework.action.module.ModuleAction.changeModuleStatus" />
+	<logConfig logType="设置模块资源" logLevel="3" operatObject="模块管理" urlPattern="com.framework.action.module.ModuleAction.setResources" />
+	
+	<logConfig logType="修改角色" logLevel="2" operatObject="角色管理" urlPattern="com.framework.action.role.RoleAction.ModifyRole" />
+	<logConfig logType="新增角色" logLevel="2" operatObject="角色管理" urlPattern="com.framework.action.role.RoleAction.insertRole" />
+	<logConfig logType="删除角色" logLevel="4" operatObject="角色管理" urlPattern="com.framework.action.role.RoleAction.deleteRole" />
+	<logConfig logType="变更角色状态" logLevel="2" operatObject="角色管理" urlPattern="com.framework.action.role.RoleAction.changeRoleStatus" />
+	
+	
+	<logConfig logType="修改应用导航栏" logLevel="2" operatObject="应用导航栏管理" urlPattern="com.framework.action.navigation.update" />
+	<logConfig logType="新增应用导航栏" logLevel="2" operatObject="应用导航栏管理" urlPattern="com.framework.action.navigation.insert" />
+	<logConfig logType="删除应用导航栏" logLevel="4" operatObject="应用导航栏管理" urlPattern="com.framework.action.navigation.delete" />
+	<logConfig logType="变更应用导航栏状态" logLevel="2" operatObject="应用导航栏管理" urlPattern="com.framework.action.navigation.changeStatus" />
+	
+	<logConfig logType="新增用户" logLevel="2" operatObject="用户管理" urlPattern="com.framework.action.user.UserAction.addUser" />
+	<logConfig logType="修改用户" logLevel="2" operatObject="用户管理" urlPattern="com.framework.action.user.UserAction.updateUser" />
+	<logConfig logType="首页修改用户" logLevel="2" operatObject="用户管理" urlPattern="com.framework.action.user.UserAction.updateHomeUser" />
+	<logConfig logType="删除用户" logLevel="3" operatObject="用户管理" urlPattern="com.framework.action.user.UserAction.deleteUser" />
+	<logConfig logType="重置密码" logLevel="3" operatObject="用户管理" urlPattern="com.framework.action.user.UserAction.resetPwd" />
+	<logConfig logType="变更用户状态" logLevel="2" operatObject="用户管理" urlPattern="com.framework.action.user.UserAction.changeStatus" />
+	
+	<logConfig logType="菜单添加" logLevel="2" operatObject="菜单管理" urlPattern="com.framework.action.pubmenu.PubMenuAction.insert" />
+	<logConfig logType="菜单修改" logLevel="2" operatObject="菜单管理" urlPattern="com.framework.action.pubmenu.PubMenuAction.update" />
+	<logConfig logType="菜单删除" logLevel="4" operatObject="菜单管理" urlPattern="com.framework.action.pubmenu.PubMenuAction.delete" />
+	<logConfig logType="菜单批量删除" logLevel="4" operatObject="菜单管理" urlPattern="com.framework.action.pubmenu.PubMenuAction.deleteBatch" />
+	<logConfig logType="菜单更改状态" logLevel="2" operatObject="菜单管理" urlPattern="com.framework.action.pubmenu.PubMenuAction.changeStatus" />
+</framework>

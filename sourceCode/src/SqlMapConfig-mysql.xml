@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <properties>
+        <property name="dialect" value="mysql" />
+    </properties>
+    <!-- 参数设置 -->
+    <settings>
+        <!-- 这个配置使全局的映射器启用或禁用缓存 -->
+        <setting name="cacheEnabled" value="true" />
+        <!-- 全局启用或禁用延迟加载。当禁用时，所有关联对象都会即时加载 -->
+        <setting name="lazyLoadingEnabled" value="true" />
+        <!-- 当启用时，有延迟加载属性的对象在被调用时将会完全加载任意属性。否则，每种属性将会按需要加载 -->
+        <setting name="aggressiveLazyLoading" value="true" />
+        <!-- 允许或不允许多种结果集从一个单独的语句中返回（需要适合的驱动） -->
+        <setting name="multipleResultSetsEnabled" value="true" />
+        <!-- 使用列标签代替列名。不同的驱动在这方便表现不同。参考驱动文档或充分测试两种方法来决定所使用的驱动 -->
+        <setting name="useColumnLabel" value="true" />
+        <!-- 允许JDBC支持生成的键。需要适合的驱动。如果设置为true则这个设置强制生成的键被使用，尽管一些驱动拒绝兼容但仍然有效（比如Derby） -->
+        <setting name="useGeneratedKeys" value="true" />
+        <!-- 指定MyBatis如何自动映射列到字段/属性。PARTIAL只会自动映射简单，没有嵌套的结果。FULL会自动映射任意复杂的结果（嵌套的或其他情况） -->
+        <setting name="autoMappingBehavior" value="PARTIAL" />
+        <!-- 配置默认的执行器。SIMPLE执行器没有什么特别之处。REUSE执行器重用预处理语句。BATCH执行器重用语句和批量更新 -->
+        <setting name="defaultExecutorType" value="SIMPLE" />
+        <!-- 设置超时时间，它决定驱动等待一个数据库响应的时间 -->
+        <setting name="defaultStatementTimeout" value="25000" />
+    </settings>
+
+    <!-- 别名定义 -->
+    <typeAliases>
+   	    <typeAlias alias="systemManager" type="com.framework.entity.systemmanager.Systemmanager" />
+        <typeAlias alias="Login" type="com.framework.entity.login.Login" />
+        <typeAlias alias="UserInfoManager" type="com.framework.entity.user.UserInfoManager" />
+        <typeAlias alias="UserDataManager" type="com.framework.entity.user.UserDataManager" />
+        <typeAlias alias="ModuleManager" type="com.framework.entity.module.ModuleManager" />
+        <typeAlias alias="RoleManager" type="com.framework.entity.role.RoleManager" />
+        <typeAlias alias="UserRoleManager" type="com.framework.entity.role.UserRoleManager" />
+        <typeAlias alias="RightsManager" type="com.framework.entity.authority.RightsManager" />
+        <typeAlias alias="UserInfoAndDataManager" type="com.framework.entity.user.UserInfoAndDataManager" />
+        <typeAlias alias="DictList" type="com.framework.entity.dict.DictList" />
+        <typeAlias alias="Dictmanager" type="com.framework.entity.dict.Dictmanager" />
+        <typeAlias alias="AopLogEntity" type="com.framework.aop.log.AopLogEntity" />
+        <typeAlias alias="Logmanager" type="com.framework.entity.logmanager.Logmanager" />
+        <typeAlias alias="TreeEntity" type="com.framework.entity.tree.TreeEntity" />
+        <typeAlias alias="Systemparam" type="com.framework.entity.systemparam.Systemparam" />
+        <typeAlias alias="Organ" type="com.framework.entity.organ.Organ" />
+        <typeAlias alias="Resources" type="com.framework.entity.resources.Resources" />
+        <typeAlias alias="RoleGroup" type="com.framework.entity.rolegroup.RoleGroup" />
+        <typeAlias alias="RolegroupRoleRela" type="com.framework.entity.rolegroup.RolegroupRoleRela" />
+        <typeAlias alias="RoleModuleRela" type="com.framework.entity.authorize.RoleModuleRela" />
+        <typeAlias alias="RoleResourceRela" type="com.framework.entity.authorize.RoleResourceRela" />
+        <typeAlias alias="ModuleResourceRela" type="com.framework.entity.module.ModuleResourceRela" />
+        <typeAlias alias="SystemModuleRela" type="com.framework.entity.systemmanager.SystemModuleRela" />
+		<typeAlias alias="LogConfig" type="com.framework.entity.logmanager.LogConfig" />
+		<typeAlias alias="PubMenu" type="com.framework.entity.pubmenu.PubMenu" />
+		<typeAlias alias="Navigation" type="com.framework.entity.navigation.Navigation" />
+    </typeAliases>
+
+    <plugins>
+        <plugin interceptor="com.orm.OffsetLimitInterceptor"/>
+    </plugins>
+    <!-- 映射文件，存放sql语句的配置文件 -->
+    <mappers>
+        <mapper resource="com/framework/maps/systemmanager/Systemmanager.xml" />
+        <mapper resource="com/framework/maps/login/Login.xml" />
+        <mapper resource="com/framework/maps/user/User.xml" />
+        <mapper resource="com/framework/maps/user/Userrolemanager.xml" />
+        <mapper resource="com/framework/maps/system/Module.xml" />
+        <mapper resource="com/framework/maps/system/Role.xml" />
+        <mapper resource="com/framework/maps/system/Rightsmanager.xml" />
+        <mapper resource="com/framework/maps/system/Dict.xml" />
+        <mapper resource="com/framework/maps/system/Systemparam.xml" />
+        <mapper resource="com/framework/maps/logmanager/Logmanager.xml" />
+        <mapper resource="com/framework/maps/organ/Organ.xml" />
+        <mapper resource="com/framework/aop/log/Aop.xml" />
+        <mapper resource="com/framework/maps/tree/Tree.xml" />
+        <mapper resource="com/framework/maps/resources/Resources.xml" />
+        <mapper resource="com/framework/maps/rolegroup/RoleGroup.xml" />
+        <mapper resource="com/framework/maps/authorize/RoleResourceRela.xml" />
+        <mapper resource="com/framework/maps/authorize/RoleModuleRela.xml" />
+        <mapper resource="com/framework/maps/pubmenu/PubMenu.xml" />
+        <mapper resource="com/framework/maps/navigation/Navigation.xml" />
+        
+        <mapper resource="config/base.mybatis.xml" />
+        
+    </mappers>
+
+</configuration>
+
+

@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--  -->
+<mapper namespace="com.framework.maps.rolegroup">
+
+    <!-- insert 元素：添加一条记录 -->
+    <insert id="add" parameterType="RoleGroup">
+        INSERT INTO t_role_group 
+        (
+            RoleGroupName,
+            RoleGroupRemark,
+            SeqNum,
+            Status,
+            CreatePerson,
+            CreateTime,
+            UpdatePerson,
+            UpdateTime,
+            UUID
+        ) 
+        VALUES 
+        (
+         #{RoleGroupName},
+         #{RoleGroupRemark},
+         #{SeqNum},
+         #{Status},
+         #{CreatePerson},
+         #{CreateTime},
+         #{UpdatePerson},
+         #{UpdateTime},
+         #{UUID}
+        )
+    </insert>
+    
+    <!-- insert 元素：添加多条记录 -->
+    <insert id="addList" parameterType="RoleGroup">
+        INSERT INTO t_role_group 
+        (
+            RoleGroupName,
+            RoleGroupRemark,
+            SeqNum,
+            Status,
+            CreatePerson,
+            CreateTime,
+            UpdatePerson,
+            UpdateTime,
+            UUID
+        ) 
+        VALUES 
+        <foreach collection="list" item="lt" index="index" separator=",">
+        (
+             #{lt.RoleGroupName},
+             #{lt.RoleGroupRemark},
+             #{lt.SeqNum},
+             #{lt.Status},
+             #{lt.CreatePerson},
+             #{lt.CreateTime},
+             #{lt.UpdatePerson},
+             #{lt.UpdateTime},
+             #{lt.UUID}
+        )
+        </foreach>
+    </insert>
+    <insert id="addListOfRolegroupRoleRela" parameterType="RolegroupRoleRela">
+       INSERT INTO t_rolegroup_role_rela 
+        (
+            UUID,
+            RoleId,
+            RoleGroupId
+        ) 
+        VALUES 
+        <foreach collection="list" item="lt" index="index" separator=",">
+        (
+             #{lt.UUID},
+             #{lt.RoleId},
+             #{lt.RoleGroupId}
+        )
+        </foreach>
+    </insert>
+    
+    <!-- update 元素：更新一条记录 -->
+    <update id="update" parameterType="RoleGroup">
+        UPDATE t_role_group SET 
+             RoleGroupName=#{RoleGroupName},
+             RoleGroupRemark=#{RoleGroupRemark},
+             SeqNum=#{SeqNum},
+             Status=#{Status},
+             UpdatePerson=#{UpdatePerson},
+             UpdateTime=#{UpdateTime}
+        WHERE 
+             UUID=#{UUID}
+    </update>
+    
+    <!-- update 元素：更新状态 -->
+    <update id="updateStatus" parameterType="RoleGroup">
+        UPDATE t_role_group SET 
+            Status=#{Status},
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE 
+            UUID=#{UUID}
+    </update>
+    
+    <!-- update 元素：更新多条记录 -->
+    <update id="updateStatusByIds" parameterType="java.util.Map">
+        UPDATE t_role_group SET 
+            Status=#{Status},
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE 
+            UUID IN 
+            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+                #{item}  
+            </foreach> 
+    </update>
+    
+    <!-- delete 元素：根据主键删除一条记录 -->
+    <delete id="delete" parameterType="java.lang.String">
+        DELETE FROM t_role_group 
+        WHERE 
+            UUID=#{UUID}
+    </delete>
+    <delete id="deleteRolegroupRoleRela" parameterType="java.lang.String">
+        DELETE FROM t_rolegroup_role_rela 
+        WHERE 
+        RoleGroupId=#{RoleGroupId}
+    </delete>
+    
+    <!-- update 元素：逻辑删除一条记录 -->
+    <update id="deleteByLogic" parameterType="java.lang.String">
+        UPDATE t_role_group SET 
+            Status=99,
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE
+            UUID=#{UUID}
+    </update>
+    
+    <!-- update 元素：逻辑删除多条记录 -->
+    <update id="deleteBatch" parameterType="java.util.Map">
+        UPDATE t_role_group SET 
+            Status=99,
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE 
+            UUID IN 
+            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+                #{item}  
+            </foreach> 
+    </update>
+
+    <!-- select 元素：查询所有的记录 -->
+    <select id="findAll" resultType="RoleGroup">
+        
+        SELECT a.*,(SELECT count(b.RoleGroupId) FROM t_rolegroup_role_rela b WHERE b.RoleGroupId=a.UUID) as childCoutn 
+        FROM t_role_group a 
+        WHERE 
+            a.Status!=99
+             <if test="RoleGroupName != null and RoleGroupName !='' ">
+		     AND a.RoleGroupName LIKE CONCAT('%','${RoleGroupName}','%' ) 
+		  	</if>   
+             <if test="RoleGroupRemark != null and RoleGroupRemark !='' ">
+		     AND a.RoleGroupRemark LIKE CONCAT('%','${RoleGroupRemark}','%' ) 
+		  	</if>   
+             <if test="SeqNum != null and SeqNum !='' ">
+		     AND a.SeqNum LIKE CONCAT('%','${SeqNum}','%' ) 
+		  	</if>   
+             <if test="Status != null and Status !='' ">
+		     AND a.Status LIKE CONCAT('%','${Status}','%' ) 
+		  	</if>   
+             <if test="CreatePerson != null and CreatePerson !='' ">
+		     AND a.CreatePerson LIKE CONCAT('%','${CreatePerson}','%' ) 
+		  	</if>   
+             <if test="CreateTime != null and CreateTime !='' ">
+		     AND a.CreateTime LIKE CONCAT('%','${CreateTime}','%' ) 
+		  	</if>   
+             <if test="UpdatePerson != null and UpdatePerson !='' ">
+		     AND a.UpdatePerson LIKE CONCAT('%','${UpdatePerson}','%' ) 
+		  	</if>   
+             <if test="UpdateTime != null and UpdateTime !='' ">
+		     AND a.UpdateTime LIKE CONCAT('%','${UpdateTime}','%' ) 
+		  	</if>   
+    </select>
+    
+    <!-- select 元素：根据主键获取数据 -->
+    <select id="findById" resultType="RoleGroup">
+        <![CDATA[
+        SELECT * FROM t_role_group 
+        WHERE 
+            UUID=#{UUID}
+            AND Status!=99
+        ]]>
+    </select>
+    
+    <!-- select 元素：获取记录条数 -->
+    <select id="count">
+        <![CDATA[
+        SELECT COUNT(*) FROM t_role_group 
+        WHERE
+            UUID=#{UUID}
+            AND Status!=99
+        ]]>
+    </select>
+</mapper>

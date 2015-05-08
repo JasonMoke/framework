@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.role">
+	<select id="getUserRoleByUserId" parameterType="java.lang.String"
+		resultType="UserRoleManager">
+        <![CDATA[ 
+            SELECT 
+             *
+            FROM t_user_role
+            WHERE UserId = #{userId}
+        ]]>
+	</select>
+		<update id="updateRoleStatus" parameterType="Rolemanager">
+		update
+		t_role set
+		Status=#{Status},UpdatePerson=#{UpdatePerson},UpdateTime=#{UpdateTime}
+		where RoleName=#{RoleName};
+	</update>
+	<select id="getRoleByUserId" parameterType="java.lang.String"
+		resultType="RoleManager">
+        <![CDATA[ 
+        	SELECT * 
+        	FROM t_role
+        	WHERE RoleName IN
+        	(SELECT 
+            RoleName
+            FROM t_user_role
+            WHERE UserId = #{userId}
+            )
+            AND Status = 1
+        ]]>
+	</select>
+		<select id="getRoleByRoleName" parameterType="java.lang.String"
+		resultType="RoleManager">
+        <![CDATA[ 
+        	SELECT * 
+        	FROM t_role
+        	WHERE RoleName=#{RoleName}
+        ]]>
+	</select>
+	<select id="findAll" resultType="RoleManager">
+	select R.RoleName,
+	(CASE WHEN L.RoleRemark IS NULL THEN R.RoleRemark ELSE L.RoleRemark END) as RoleRemark,
+	R.RoleNumber,R.Status,R.CreatePerson,R.CreateTime,R.UpdatePerson,R.UpdateTime from t_role R
+	LEFT JOIN t_roleml L ON (R.RoleName=L.RoleName AND L.LanguageCode=#{locale})	where R.Status!=99
+	</select>
+	<!-- select 元素：根据主键获取数据 -->
+	<select id="findById" resultType="Rolemanager">
+	select R.RoleName,
+	(CASE WHEN L.RoleRemark IS NULL THEN R.RoleRemark ELSE L.RoleRemark END) as RoleRemark,
+	R.RoleNumber,R.Status,R.CreatePerson,R.CreateTime,R.UpdatePerson,R.UpdateTime from t_role R
+	LEFT JOIN t_roleml L ON (R.RoleName=L.RoleName AND L.LanguageCode=#{locale})	where R.Status!=99 and R.RoleName=#{RoleName} ORDER BY R.RoleNumber ASC
+	</select>
+	<select id="findByRoleName" resultType="int">
+		select (select count(*) from t_user_role where RoleName in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		)+
+		(select count(*) from t_role_module_rela where RoleName in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		)>0
+		as
+		isExists
+
+	</select>
+	<!-- 查询角色是否与用户存在关联 -->
+	<select id="findByRoleNameFromUser" resultType="int">
+		select (select count(*) from t_user_role where RoleName = #{RoleName}
+		)>0
+		as
+		isExists
+	</select>
+	<!-- 查询角色是否与模块存在关联 -->
+    <select id="findByRoleNameFromModule" resultType="int">
+		select (select count(*) from t_role_module_rela where RoleName = #{RoleName}
+		)>0
+		as
+		isExists
+	</select>
+	
+	<!-- insert 元素：添加一条记录 -->
+	<insert id="add" parameterType="Rolemanager">
+		INSERT INTO t_role
+		(
+		RoleName,
+		RoleRemark,
+		RoleNumber,
+		Status,
+		CreatePerson,
+		CreateTime,
+		UpdatePerson,
+		UpdateTime
+		)
+		VALUES
+		(
+		#{RoleName},
+		#{RoleRemark},
+		#{RoleNumber},
+		#{Status},
+		#{CreatePerson},
+		#{CreateTime},
+		#{UpdatePerson},
+		#{UpdateTime}
+		)
+	</insert>
+	<update id="update" parameterType="Rolemanager">
+		UPDATE t_role SET
+		RoleRemark=#{RoleRemark},
+		RoleNumber=#{RoleNumber},
+		Status=#{Status},
+		UpdatePerson=#{UpdatePerson},
+		UpdateTime=#{UpdateTime}
+		WHERE
+		RoleName=#{RoleName}
+	</update>
+	<update id="delRole" parameterType="Rolemanager">
+		update t_role set Status='99',
+		UpdatePerson=#{UpdatePerson},
+		UpdateTime=#{UpdateTime} where RoleName in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		;
+	</update>
+<!-- 	<update id="delRole2" parameterType="Rolemanager">
+		update t_user_role set Status='99',
+		UpdatePerson=#{UpdatePerson},
+		UpdateTime=#{UpdateTime}
+		 where RoleName in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		;
+	</update>
+	<update id="delRole3" parameterType="Rolemanager">
+		update t_role_module_rela set Status='99',
+		UpdatePerson=#{UpdatePerson},
+		UpdateTime=#{UpdateTime} where RoleName in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		;
+	</update> -->
+</mapper>

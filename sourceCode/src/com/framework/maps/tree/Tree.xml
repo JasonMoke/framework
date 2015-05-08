@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.tree">
+<!-- 模块添加、修改树 -->
+<select id="findAddModuleList" resultType="TreeEntity">
+			SELECT M.ModuleId AS
+		ID,M.ModuleParent AS PID,M.ModuleNumber,D.Status as ParentStatus,
+		(case when
+		L.ModuleName is null then M.ModuleName else L.ModuleName end)AS Name
+		FROM t_module M LEFT JOIN t_moduleml
+		L ON (L.ModuleId=M.ModuleId AND L.LanguageCode= #{locale})
+		LEFT JOIN t_module D ON(D.ModuleId=M.ModuleParent)
+		Where M.Status='1' and (D.Status is null or D.Status='1')
+		ORDER BY M.ModuleNumber;
+	</select>
+	<select id="findModuleList" resultType="TreeEntity">
+			SELECT M.ModuleId AS
+		ID,M.ModuleParent AS PID,M.ModuleNumber,D.Status as ParentStatus,
+		(case when
+		L.ModuleName is null then M.ModuleName else L.ModuleName end)AS Name
+		FROM t_module M LEFT JOIN t_moduleml
+		L ON (L.ModuleId=M.ModuleId AND L.LanguageCode= #{locale})
+		LEFT JOIN t_module D ON(D.ModuleId=M.ModuleParent)
+		Where M.Status='1' and (D.Status is null or D.Status='1')
+		<if test="systemCode !=null and systemCode !='' ">
+			and M.SystemCode =#{systemCode}
+		</if>
+		<if test="pid !=null and pid !='' ">
+			and M.ModuleParent =#{pid}
+		</if>
+		ORDER BY M.ModuleNumber;
+	</select>
+	<select id="findModuleAllocateResource" resultType="TreeEntity">
+		SELECT M.ModuleId AS
+		ID,M.ModuleParent AS PID,M.ModuleNumber,
+		M.ModuleName AS Name
+		FROM t_module M
+		LEFT JOIN t_system_module_rela s on(m.ModuleId=s.ModuleId)
+		Where M.Status='1' 
+		<if test="systemCode !=null and systemCode !='' ">
+			and (s.SystemId =#{systemCode} or M.ModuleParent =#{systemCode})
+		</if>
+		ORDER BY M.ModuleNumber;
+	</select>
+	<select id="findResourceAllocate" resultType="TreeEntity">
+		SELECT s.ResourcesId as ID,s.ResourcesName as NAME from t_resources s LEFT JOIN t_module_resource_rela r on(s.ResourcesId=r.ResourceId)
+		where r.ModuleId=#{systemCode}
+	</select>
+	<select id="moduleApplicationTree" resultType="TreeEntity">
+			SELECT M.ModuleId AS
+		ID,M.ModuleParent AS PID,M.ModuleNumber,D.Status as ParentStatus,
+		(case when
+		L.ModuleName is null then M.ModuleName else L.ModuleName end)AS Name
+		FROM t_module M LEFT JOIN t_moduleml
+		L ON (L.ModuleId=M.ModuleId AND L.LanguageCode= #{locale})
+		LEFT JOIN t_module D ON(D.ModuleId=M.ModuleParent)
+		Where M.Status='1' and (D.Status is null or D.Status='1')
+		ORDER BY M.ModuleNumber;
+	</select>
+	<select id="moduleMeunTree" resultType="TreeEntity">
+		SELECT M.ModuleId AS
+		ID,M.ModuleParent AS PID,
+		M.ModuleName AS Name,rs.IsMenu,rs.ResourcesUrl as treevalue
+		FROM t_module M 
+		LEFT JOIN t_module_resource_rela r on(r.ModuleId=m.ModuleId)
+		left join t_resources rs on(r.ResourceId=rs.ResourcesId)
+		Where M.Status='1' 
+		and rs.IsMenu='1'
+		GROUP BY Name
+	</select>
+	<select id="findSystemList" resultType="TreeEntity">
+		SELECT M.SystemCode AS
+		ID,M.SystemNumber,
+		(case when	L.FullName is null then M.FullName else L.FullName end) AS Name
+		FROM t_system M 
+		LEFT JOIN t_systemml
+		L ON (L.SystemCode=M.SystemCode AND L.LanguageCode= #{locale})
+		Where M.Status='1'
+		ORDER BY M.SystemNumber;
+	</select>
+	<select id="findRegionList" resultType="TreeEntity">
+		SELECT DictName AS
+		NAME,DictData1 AS ID ,DictListCode as PID
+		FROM t_dict where
+		Status='1' and DictListCode='Region'
+		ORDER BY DictNumber
+	</select>
+	<select id="findOrganList" resultType="TreeEntity">
+		SELECT Cname AS	NAME,OrganId AS ID ,ParentId as PID
+		FROM t_organ where
+		Status='1' 
+		<if test="id !=null and id !='' ">
+		and ParentId=#{id}
+		</if>
+		ORDER BY SeqNum
+	</select>
+	<select id="findUserOrganId" resultType="TreeEntity">
+		SELECT u.FullName AS	NAME,u.UserId AS ID 
+		FROM t_userdata u where
+		Status='1' 
+ 		and OrganId=#{id}
+	</select>
+	<select id="findRoleList" resultType="TreeEntity">
+		SELECT RoleRemark AS
+		NAME,RoleName AS ID
+		FROM t_role where
+		Status='1'
+		ORDER BY
+		RoleNumber
+	</select>
+	<select id="findRoleGroupRoleList" resultType="TreeEntity">
+		(SELECT g.RoleGroupName AS
+		NAME,g.UUID AS ID,0 AS PID,
+		g.SeqNum as SeqNum
+		FROM t_role_group g
+ 		where
+		g.Status='1')
+		UNION 
+		(SELECT r.RoleRemark AS
+		NAME,r.RoleName AS ID,
+		rr.RoleGroupId as PID,
+		r.RoleNumber as SeqNum
+		FROM t_role r ,t_rolegroup_role_rela rr where
+		rr.RoleId = r.RoleName and
+		r.Status='1')
+		ORDER BY SeqNum
+	</select>
+	<select id="findRoleGroupRoleListForUser" resultType="TreeEntity">
+		select RoleName as ID from t_user_role where UserId= #{UserId} 
+	</select>
+	<select id="findModuleByModuleID" resultType="TreeEntity">
+		select
+		r.ModuleId as
+		ID,m.ModuleName as NAME from t_role_module_rela r INNER JOIN
+		t_module m on r.ModuleId=m.ModuleId where m.Status='1' and
+		r.RoleName = #{RoleName}
+	</select>
+	<select id="findResourceByRoleID" resultType="TreeEntity">
+		select
+		m.ResourcesId as
+		ID,m.ResourcesName as NAME from t_role_resource_rela r INNER JOIN
+		t_resources m on r.ResourceId=m.ResourcesId where r.Status='1'
+		and r.RoleName = #{RoleName}
+	</select>
+	<select id="findRoleByUserID" resultType="TreeEntity">
+		SELECT
+			t.UserId AS NAME,
+			t.RoleName AS ID
+		FROM
+			t_user_role t
+		INNER JOIN t_userdata u ON t.UserId = u.UserId
+		WHERE
+		u.UserId=#{UserId} and
+		u.Status =1
+	</select>
+	<select id="findRoleByRoleGroupId" resultType="TreeEntity">
+		SELECT
+			u.RoleGroupName AS NAME,
+			t.RoleId AS ID
+		FROM
+			t_rolegroup_role_rela t
+		INNER JOIN t_role_group u ON t.RoleGroupId = u.UUID
+		WHERE
+		u.UUID=#{UUID} and
+		u.Status =1
+	</select>
+	<select id="findOrganByUserID" resultType="TreeEntity">
+		SELECT t.UserId AS
+		NAME,t.RoleName AS ID
+		FROM t_user_role t INNER JOIN
+		t_userinfo u on t.UserId=u.UserId where
+		u.UserId=#{UserId} and
+		u.Status =1
+	</select>
+	<select id="findModuleResource" resultType="TreeEntity">
+		SELECT ResourceId AS ID
+		FROM t_module_resource_rela where
+		ModuleId=#{checkedId} 
+	</select>
+	<select id="findSystemModule" resultType="TreeEntity">
+		SELECT ModuleId AS ID
+		FROM t_system_module_rela where
+		SystemId=#{checkedId} 
+	</select>
+	<select id="findResources" resultType="TreeEntity">
+		select ResourcesId as ID,ResourcesName as NAME,ResourcesUrl as treevalue from t_resources where Status!=99
+		ORDER BY UpdateTime desc
+	</select>
+	<select id="findMeun" resultType="TreeEntity">
+		select UUID as ID,MenuName as NAME,PID as PID from t_pub_menu where Status!=99 AND NavId=#{NavId}
+	</select>
+	<!-- 菜单的左侧树 -->
+	<select id="findLeftMeun" resultType="TreeEntity">
+		select UUID as ID,MenuName as NAME,PID as PID from t_pub_menu where Status!=99 AND NavId=#{NavId}
+	</select>
+	<select id="findUserByRole" resultType="TreeEntity">
+		SELECT t.UserId AS
+		NAME,t.RoleName AS ID
+		FROM t_user_role t INNER JOIN
+		t_userinfo u on t.UserId=u.UserId where
+		u.UserId=#{UserId} and
+		u.Status =1
+	</select>
+	<select id="findUserByPu" resultType="TreeEntity">
+		select u.UserName as
+		NAME,u.UserId AS ID from t_userinfo u INNER JOIN
+		t_user_role r on u.UserId=r.UserId where r.RoleName='publisher'
+		and u.Status=1
+	</select>
+	<select id="findUserByPuXin" resultType="TreeEntity">
+		SELECT a.FullName AS
+		NAME, a.UserId AS ID,b.FullName AS PID from t_userdata a
+		left
+		join t_publishermanager b on(a.OrganId=b.PublisherId)
+		where a.UserId in
+		(select UserId from t_user_role where
+		RoleName='publisher' and
+		Status=1)
+		and a.Status=1
+
+	</select>
+	<select id="findUserByRoleByOrganId" resultType="TreeEntity">
+		SELECT UserId AS
+		ID from t_userdata where OrganId=#{OrganId}
+		and Status=1
+	</select>
+	<select id="findOrganIdByUser" resultType="TreeEntity">
+		SELECT OrganId AS
+		ID from t_userdata where Status=1
+		<if test="userId !=null and userId !='' ">
+			and UserId=#{userId}
+		</if>
+	</select>
+	<select id="findEBookFormat" resultType="TreeEntity">
+		SELECT DictName
+		AS
+		NAME,DictData1 AS ID ,DictListCode as PID
+		FROM t_dict where
+		Status='1' and DictListCode='EbookFormat'
+		ORDER BY DictNumber
+	</select>
+	<select id="findLanguage" resultType="TreeEntity">
+		SELECT DictName
+		AS
+		NAME,DictData1 AS ID ,DictListCode as PID
+		FROM t_dict where
+		Status='1' and DictListCode='Language'
+		ORDER BY DictNumber
+	</select>
+	<select id="findMetadataFormat" resultType="TreeEntity">
+		SELECT DictName
+		AS
+		NAME,DictData1 AS ID ,DictListCode as PID
+		FROM t_dict where
+		Status='1' and DictListCode='MetadataFormat'
+		ORDER BY DictNumber
+	</select>
+	<select id="findCoverFormat" resultType="TreeEntity">
+		SELECT DictName
+		AS
+		NAME,DictData1 AS ID ,DictListCode as PID
+		FROM t_dict where
+		Status='1' and DictListCode='CoverFormat'
+		ORDER BY DictNumber
+	</select>
+	<select id="findScreenShotFormatList" resultType="TreeEntity">
+		SELECT DictName
+		AS NAME,DictData1 AS ID ,DictListCode as PID
+		FROM t_dict where
+		Status='1' and DictListCode='ScreenShotFormat'
+		ORDER BY DictNumber
+	</select>
+	<!-- 根据出版商Id生成资产树 -->
+	<select id="findByPublisherId" resultType="TreeEntity">
+		SELECT Title
+		AS
+		NAME,AssetsId AS ID ,PublisherId as PID
+		FROM t_assetsmanager where
+		Status!=99 AND PublisherId=#{PublisherId} AND (Title LIKE
+		CONCAT(CONCAT('%', #{Condition}),'%') OR ISBN LIKE CONCAT(CONCAT('%',
+		#{Condition}),'%') OR EISBN LIKE CONCAT(CONCAT('%',
+		#{Condition}),'%'))
+		ORDER BY AssetsId
+	</select>
+
+	<!-- 根据查询条件生成资产树 -->
+	<select id="findByConditionAssets" resultType="TreeEntity">
+		SELECT Title
+		AS
+		NAME,AssetsId AS ID ,PublisherId as PID
+		FROM t_assetsmanager where
+		Status!=99
+		ORDER BY AssetsId
+	</select>
+	
+	<!-- 根据所有渠道生成资产树 -->
+	<select id="findByChannelManager" resultType="TreeEntity">
+		SELECT FullName
+		AS NAME,ChannelId AS ID
+		FROM t_channelmanager where
+		Status!=99 
+		ORDER BY ChannelId
+	</select>
+</mapper>

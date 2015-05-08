@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+<!-- struts是Struts 2配置文件的根元素 -->
+<struts>
+	<!-- Struts 2的Action必须放在指定的包空间下定义 -->
+	<package name="com.framework.action.role" namespace="/role"
+		extends="struts-default">
+		<action name="roleDialog" class="com.framework.action.role.RoleAction"
+			method="roleDialog">
+			<result name="success">/jsp/framework/role/role_dialog.jsp</result>
+		</action>
+		<action name="findAllRoles" class="com.framework.action.role.RoleAction"
+			method="findAllRoles">
+			<result name="success">/jsp/framework/role/role_list.jsp</result>
+		</action>
+		<action name="detailRole" class="com.framework.action.role.RoleAction"
+			method="detailRole">
+			<result name="success">/jsp/framework/role/role_detail.jsp
+			</result>
+		</action>
+		<action name="toModifyRole" class="com.framework.action.role.RoleAction"
+			method="toModifyRole">
+			<result name="success">/jsp/framework/role/role_modify.jsp
+			</result>
+		</action>
+		<action name="gotoAdd" class="com.framework.action.role.RoleAction"
+			method="gotoAdd">
+			<result name="success">/jsp/framework/role/role_add.jsp
+			</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		<action name="insertRole" class="com.framework.action.role.RoleAction"
+			method="insertRole">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">findAllRoles</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="ModifyRole" class="com.framework.action.role.RoleAction"
+			method="ModifyRole">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">findAllRoles</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="deleteRole" class="com.framework.action.role.RoleAction"
+			method="deleteRole">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">findAllRoles</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="selRight" class="com.framework.action.role.RoleAction"
+			method="selRight">
+			<result name="success" type="redirectAction">
+				<param name="actionResult">${actionResult}</param>
+				<param name="actionName">findAllRoles</param>
+			</result>
+			<result name="error">/error.jsp</result>
+			<result name="input">/error.jsp</result>
+		</action>
+	</package>
+	<package name="com.framework.action.roleValidate"
+		namespace="/roleAjax" extends="json-default">
+		<action name="getRoleCount" class="com.framework.action.role.RoleAction"
+			method="getRoleCount">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="getRoleManagerCountOne" class="com.framework.action.role.RoleAction"
+			method="getRoleManagerCountOne">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="getRoleManagerCount" class="com.framework.action.role.RoleAction"
+			method="getRoleManagerCount">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="changeRoleStatus" class="com.framework.action.role.RoleAction"
+			method="changeRoleStatus">
+			<result name="success" type="json"></result>
+		</action>
+	</package>
+</struts>

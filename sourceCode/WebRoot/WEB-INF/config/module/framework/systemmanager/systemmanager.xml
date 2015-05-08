@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+ "http://struts.apache.org/dtds/struts-2.1.dtd">
+<!-- struts是Struts 2配置文件的根元素 -->
+<struts>
+    <!-- Struts 2的Action必须放在指定的包空间下定义 -->
+    <package name="com.framework.action.systemmanager" namespace="/systemmanager" extends="struts-default">
+        <!-- 管理 -->
+        <action name="findList" class="com.framework.action.systemmanager.SystemmanagerAction" method="findList">
+            <result name="success">/jsp/framework/systemmanager/systemmanager_list.jsp</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <!-- 跳转到添加管理页面 -->
+        <action name="gotoAdd" class="com.framework.action.systemmanager.SystemmanagerAction" method="gotoAdd">
+            <result name="success">/jsp/framework/systemmanager/systemmanager_add.jsp</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <!-- 添加 -->
+        <action name="insert" class="com.framework.action.systemmanager.SystemmanagerAction" method="insert">
+            <result name="success" type="redirectAction">
+                <param name="actionResult">${actionResult}</param>
+                <param name="switchFlag">${switchFlag}</param>
+	 			<param name="actionName">findList</param>
+	 		</result>
+            <result name="error">/error.jsp</result>
+            <result name="unauthorized">/unauthorized.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <!-- 详情 -->
+        <action name="detail" class="com.framework.action.systemmanager.SystemmanagerAction" method="detail">
+            <result name="success">/jsp/framework/systemmanager/systemmanager_detail.jsp</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <!-- 修改 -->
+        <action name="gotoModify" class="com.framework.action.systemmanager.SystemmanagerAction" method="gotoModify">
+            <result name="success">/jsp/framework/systemmanager/systemmanager_modify.jsp</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <!-- 更新 -->
+        <action name="update" class="com.framework.action.systemmanager.SystemmanagerAction" method="update">
+        	<result name="success" type="redirectAction">
+                <param name="actionResult">${actionResult}</param>
+                <param name="switchFlag">${switchFlag}</param>
+	 			<param name="actionName">findList</param>
+	 		</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <!-- 删除 -->
+        <action name="deleteOne" class="com.framework.action.systemmanager.SystemmanagerAction" method="delete">
+            <result name="success" type="redirectAction">
+                <param name="actionResult">${actionResult}</param>
+                <param name="switchFlag">${switchFlag}</param>
+	 			<param name="actionName">findList</param>
+	 		</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <!-- 批量删除 -->
+        <action name="deleteBatch" class="com.framework.action.systemmanager.SystemmanagerAction" method="deleteBatch">
+            <result name="success" type="redirectAction">
+                <param name="actionResult">${actionResult}</param>
+                <param name="switchFlag">${switchFlag}</param>
+	 			<param name="actionName">findList</param>
+	 		</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+        <!-- 给应用设置模块 -->
+        <action name="setModuleManager" class="com.framework.action.systemmanager.SystemmanagerAction" method="setModuleManager">
+            <result name="success" type="redirectAction">
+                <param name="actionResult">${actionResult}</param>
+	 			<param name="actionName">findList</param>
+	 		</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+         <!-- 查看应用下的模块 -->
+        <action name="detailModule" class="com.framework.action.systemmanager.SystemmanagerAction" method="detailModule">
+            <result name="success">/jsp/framework/systemmanager/systemmanager_module_list.jsp</result>
+            <result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+        </action>
+    </package>
+    
+    <package name="com.framework.action.systemmanagerJson" namespace="/systemmanagerAjax" extends="json-default" >
+        <!-- 更改状态 -->
+        <action name="changeStatus" class="com.framework.action.systemmanager.SystemmanagerAction" method="changeStatus">
+	    	<result name="success" type="json"></result>
+	    	<result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+	 	</action>
+        <!-- 查询 首选项-->
+        <action name="selectIsPreferences" class="com.framework.action.systemmanager.SystemmanagerAction" method="selectIsPreferences">
+	    	<result name="success" type="json"></result>
+	    	<result name="error">/error.jsp</result>
+            <result name="input">/error.jsp</result>
+	 	</action>
+	</package>
+</struts>

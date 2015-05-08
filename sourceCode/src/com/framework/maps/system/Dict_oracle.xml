@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dict">
+	<select id="findAllDictList" 
+		resultType="DictList">
+		select * from ( select row_.*, rownum rownum_ from (        
+   		 SELECT * FROM DICTLIST 
+		where STATUS!=99 
+		<if test="Status ==1 or Status ==0 ">
+			and STATUS=#{Status}
+		</if>
+		<if test="DictListCode !=null and DictListCode !='' ">
+			and DICTLISTCODE LIKE '%${DictListCode}%'
+		</if>
+		<if test="DictListName !=null and DictListName !='' ">
+			and DICTLISTNAME LIKE '%${DictListName}%'
+		</if>
+		<![CDATA[ 
+            ) row_ where rownum <= #{end} ) 
+            where rownum_ >= #{start}	
+		]]>
+            ORDER BY DICTLISTNUMBER
+	</select>
+	<select id="getDictManager" resultType="Dictmanager">
+		select * from ( select row_.*, rownum rownum_ from (  
+		select a.DICTID,a.DICTLISTCODE,CASE WHEN b.DICTNAME is null THEN a.DICTNAME ELSE b.DICTNAME
+		END as DICTNAME,a.PARENTDICTID,a.DICTDATA1,a.DICTDATA2,a.DICTDATA3,a.DICTDATA4,a.DICTDATA5,a.BIGIMAGE,a.SMALLIMAGE,
+		CASE WHEN b.DICTREMARK is null THEN a.DICTREMARK ELSE b.DICTREMARK END as DICTREMARK
+		,a.STATUS,a.CREATEPERSON,a.CREATETIME,a.UPDATEPERSON,a.UPDATETIME
+		from DICTMANAGER a left join DICTML b on(a.DICTID=b.DICTID and 
+		b.LANGUAGECODE=#{locale})
+		where a.DICTLISTCODE=#{sCode} and a.STATUS!=99
+		<if test="Status ==1 or Status ==0 ">
+			and a.STATUS=#{Status}
+		</if>
+		<if test="DictData1 !=null and DictData1 !='' ">
+			and a.DICTDATA1 LIKE '%${DictData1}%'
+		</if>
+		<if test="DictListName !=null and DictListName !='' ">
+			and a.DICTNAME LIKE '%${DictListName}%'
+		</if>
+		ORDER BY a.DICTNUMBER ASC
+		<![CDATA[ 
+            ) row_ where rownum <= #{end} ) 
+            where rownum_ >= #{start}	
+		]]>
+		<!-- select * from t_dict where Status!='99' and DictListCode= ${sCode} 
+			ORDER BY DictNumber ASC LIMIT #{start},#{end} -->
+
+	</select>
+	<select id="getDictManagerCount" resultType="int">
+		select count(*)
+		from
+		DICTMANAGER
+		WHERE
+		STATUS != '99'
+		<if test="Status ==1 or Status ==0 ">
+			and STATUS=#{Status}
+		</if>
+		<if test="DictData1 !=null and DictData1 !='' ">
+			and DICTDATA1 LIKE '%${DictData1}%'
+		</if>
+		<if test="DictListName !=null and DictListName !='' ">
+			and DICTNAME LIKE '%${DictListName}%'
+		</if>
+		 and DICTLISTCODE= ${Code}
+	</select>
+	<select id="getDictManagerByDictCode" resultType="int">
+		select *
+		from
+		DICTMANAGER
+		WHERE
+		STATUS != '99' and DICTLISTCODE= #{dictCode}
+	</select>
+
+	<select id="findAllDictListCount" resultType="int">
+		select count(*)
+		from
+		DICTLIST
+		WHERE STATUS!=99
+		<if test="Status ==1 or Status ==0 ">
+			and STATUS=#{Status}
+		</if>
+		<if test="DictListCode !=null and DictListCode !='' ">
+			and DICTLISTCODE LIKE '%${DictListCode}%'
+		</if>
+		<if test="DictListName !=null and DictListName !='' ">
+			and DICTLISTNAME LIKE '%${DictListName}%'
+		</if>
+
+	</select>
+	<insert id="insertDictList" parameterType="DictList">
+		insert into DICTLIST
+		(DICTLISTCODE,DICTLISTNAME,DICTLISTREMARK,DICTLISTNUMBER,STATUS,CREATETIME,CREATEPERSON,UPDATEPERSON,UPDATETIME)
+		values(#{DictListCode},#{DictListName},#{DictListRemark},#{DictListNumber},#{Status},#{CreateTime},#{CreatePerson},#{UpdatePerson},#{UpdateTime})
+	</insert>
+	<insert id="insertDictManager" parameterType="Dictmanager">
+		insert into DICTMANAGER
+		(DICTID,DICTLISTCODE,DICTNAME,PARENTDICTID,DICTDATA1,DICTDATA2,DICTDATA3,DICTDATA4,DICTDATA5,BIGIMAGE,SMALLIMAGE,DICTREMARK,DICTNUMBER,STATUS,CREATETIME,CREATEPERSON,UPDATEPERSON,UPDATETIME)
+		values(#{DictId,jdbcType=VARCHAR},#{DictListCode,jdbcType=VARCHAR},#{DictName,jdbcType=VARCHAR},#{ParentDictId,jdbcType=VARCHAR},#{DictData1,jdbcType=VARCHAR},#{DictData2,jdbcType=VARCHAR},#{DictData3,jdbcType=VARCHAR},#{DictData4,jdbcType=VARCHAR},#{DictData5,jdbcType=VARCHAR},#{BigImage,jdbcType=VARCHAR},#{SmallImage,jdbcType=VARCHAR},#{DictRemark,jdbcType=VARCHAR},#{DictNumber,jdbcType=NUMERIC},#{Status,jdbcType=NUMERIC},#{CreateTime,jdbcType=DATE},#{CreatePerson,jdbcType=VARCHAR},#{UpdatePerson,jdbcType=VARCHAR},#{UpdateTime,jdbcType=DATE})
+	</insert>
+	<update id="updateDictListForDictListCode" parameterType="DictList">
+		update
+		DICTLIST set
+		DICTLISTNAME=#{DictListName},DICTLISTREMARK=#{DictListRemark},DICTLISTNUMBER=#{DictListNumber},STATUS=#{Status},UPDATEPERSON=#{UpdatePerson},UPDATETIME=#{UpdateTime}
+		where DICTLISTCODE=#{DictListCode}
+	</update>
+	<update id="updateDictmanagerForID" parameterType="Dictmanager">
+		update
+		DICTMANAGER set
+		DICTNAME=#{DictName,jdbcType=VARCHAR},PARENTDICTID=#{ParentDictId,jdbcType=VARCHAR},DICTDATA1=#{DictData1,jdbcType=VARCHAR},DICTDATA2=#{DictData2,jdbcType=VARCHAR},DICTDATA3=#{DictData3,jdbcType=VARCHAR},DICTDATA4=#{DictData4,jdbcType=VARCHAR},DICTDATA5=#{DictData5,jdbcType=VARCHAR},BIGIMAGE=#{BigImage,jdbcType=VARCHAR},SMALLIMAGE=#{SmallImage,jdbcType=VARCHAR},DICTREMARK=#{DictRemark,jdbcType=VARCHAR},DICTNUMBER=#{DictNumber,jdbcType=NUMERIC},STATUS=#{Status,jdbcType=NUMERIC},UPDATEPERSON=#{UpdatePerson,jdbcType=VARCHAR},UPDATETIME=#{UpdateTime,jdbcType=DATE}
+		where DICTID=#{DictId,jdbcType=VARCHAR}
+	</update>
+	<delete id="delDictListForDictListCode" parameterType="DictList">
+		delete from DICTLIST where DICTLISTCODE in
+		<foreach item="item" index="index" collection="listCodes"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		
+	</delete>
+	<update id="delDictmanagerForDictId" parameterType="Dictmanager">
+		update DICTMANAGER set
+		STATUS='99',UPDATEPERSON=#{updatePerson},UPDATETIME=#{UpdateTime}
+		where DICTID in
+		<foreach item="item" index="index" collection="dictID" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		
+	</update>
+	<update id="updatedictListStatus" parameterType="DictList">
+		update
+		DICTLIST set
+		STATUS=#{Status},UPDATEPERSON=#{UpdatePerson},UPDATETIME=#{UpdateTime}
+		where DICTLISTCODE=#{DictListCode}
+	</update>
+	<update id="updateDictmanagerStatus" parameterType="Dictmanager">
+		update
+		DICTMANAGER set
+		STATUS=#{Status},UPDATEPERSON=#{UpdatePerson},UPDATETIME=#{UpdateTime}
+		where DICTID=#{DictId}
+	</update>
+	<select id="getDictByCode" resultType="int">
+        <![CDATA[ 
+            SELECT 
+            COUNT( *)
+            FROM DICTLIST 
+            WHERE DICTLISTCODE = #{sCode} 
+            AND STATUS !='99'
+        ]]>
+	</select>
+	<select id="getDictListByCode" resultType="DictList">
+        <![CDATA[ 
+    		SELECT 
+            *
+            FROM DICTLIST 
+            WHERE DICTLISTCODE = #{sCode} 
+            AND STATUS !='99'
+        ]]>
+	</select>
+	<select id="getDictmanagerByCode" resultType="Dictmanager">
+        <![CDATA[ 
+        
+        select a.DICTID,a.DICTLISTCODE,CASE WHEN b.DICTNAME is null THEN a.DICTNAME ELSE b.DICTNAME
+		END as DICTNAME,a.PARENTDICTID,a.DICTDATA1,a.DICTDATA2,a.DICTDATA3,a.DICTDATA4,a.DICTDATA5,a.BIGIMAGE,a.SMALLIMAGE,
+		CASE WHEN b.DICTREMARK is null THEN a.DICTREMARK ELSE b.DICTREMARK END as DICTREMARK
+		,a.STATUS,a.CREATEPERSON,a.CREATETIME,a.UPDATEPERSON,a.UPDATETIME,a.DICTNUMBER
+		from DICTMANAGER a left join DICTML b on(a.DICTID=b.DICTID and
+		b.LANGUAGECODE=#{locale})
+		where a.DICTID = #{dictId}
+		
+				
+    
+		
+        ]]>
+	</select>
+	<select id="getDictManagerCountNumber" resultType="int">
+		select count(*)
+		from
+		DICTMANAGER
+		WHERE
+		STATUS != '99' and
+		DICTLISTCODE in
+		<foreach item="item" index="index" collection="listCodes"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		
+	</select>
+	<select id="getDictManagerByName" resultType="int">
+		select count(*)
+		from
+		DICTMANAGER
+		WHERE
+		STATUS != '99' and
+		DICTLISTCODE =
+		#{DictListCode}
+		and DICTNAME=#{DictName}
+		
+	</select>
+	<select id="getDictManagerByNameID" resultType="int">
+		select count(*)
+		from
+		DICTMANAGER
+		WHERE
+		STATUS != '99' and
+		DICTLISTCODE =
+		#{DictListCode}
+		and DICTNAME=#{DictName} and DICTID != #{DictId}
+		
+	</select>
+	<select id="getDictManagerByDictDataID" resultType="int">
+		select
+		count(*)
+		from
+		DICTMANAGER
+		WHERE
+		STATUS != '99' and
+		DICTLISTCODE =
+		#{DictListCode}
+		and DICTDATA1=#{DictData1} and DICTID != #{DictId}
+		
+	</select>
+	<select id="getDictManagerByDictData" resultType="int">
+		select count(*)
+		from
+		DICTMANAGER
+		WHERE
+		STATUS != '99' and
+		DICTLISTCODE =
+		#{DictListCode}
+		and DICTDATA1=#{DictData1}
+		
+	</select>
+</mapper>

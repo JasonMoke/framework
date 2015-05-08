@@ -1,0 +1,21 @@
+package com.core.framework.mybatis.support;
+
+public class DBContextHolder {
+	    public final static String SESSION_FACTORY_MYSQL = "mysql";
+	    public final static String SESSION_FACTORY_ORACLE = "oracle";
+	    public final static String SESSION_FACTORY_SQLSERVER = "sqlserver"; 
+	      
+	    private static final ThreadLocal<String> contextHolder = new ThreadLocal<String>();  
+	      
+	    public static void setDBType(String dbType) {  
+	        contextHolder.set(dbType);  
+	    }  
+	      
+	    public static String getDBType() {  
+	        return contextHolder.get();  
+	    }  
+	      
+	    public static void clearDBType() {  
+	        contextHolder.remove();  
+	    }  
+}

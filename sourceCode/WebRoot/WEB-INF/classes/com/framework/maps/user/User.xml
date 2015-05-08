@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.maps.user">
+	<!-- cache - 配置给定命名空间的缓存。  -->
+	<!-- cache-ref – 从其他命名空间引用缓存配置。  -->
+	<!-- resultMap – 最复杂，也是最有力量的元素，用来描述如何从数据库结果集中来加载你的对象。 -->
+	<!-- parameterMap – 已经被废弃了！老式风格的参数映射。内联参数是首选，这个元素可能在将来被移除。这里不会记录。 -->
+	<!-- sql – 可以重用的SQL块，也可以被其他语句引用。 -->
+	<!-- insert – 映射插入语句 -->
+	<!-- update – 映射更新语句 -->
+	<!-- delete – 映射删除语句 -->
+	<!-- select – 映射查询语句 -->
+
+
+	<!-- select元素： -->
+	<!-- 1）parameterType：参数类型 -->
+	<!-- 2）resultType：从这条语句中返回的期望类型的类的完全限定名或别名。注意集合情形，那应该是集合可以包含的类型，而不能是集合本身。使用resultType或resultMap，但不能同时使用。 -->
+	<!-- 3）resultMap：命名引用外部的resultMap。返回map是MyBatis最具力量的特性，对其有一个很好的理解的话，许多复杂映射的情形就能被解决了。使用resultMap或resultType，但不能同时使用。 -->
+	<!-- 4）flushCache：是否清空缓存，默认false,不清空，如果为true每次查询都会清空缓存。 -->
+	<!-- 5）useCache：将其设置为true，将会导致本条语句的结果被缓存。默认值：true。 -->
+	<!-- 6）fetchSize：这是暗示驱动程序每次批量返回的结果行数。默认不设置（驱动自行处理）。 -->
+	<!-- 7）statementType：STATEMENT,PREPARED或CALLABLE的一种。这会让MyBatis使用选择使用Statement，PreparedStatement或CallableStatement。默认值：PREPARED。 -->
+	<!-- 8）resultSetType：FORWARD_ONLY|SCROLL_SENSITIVE|SCROLL_INSENSITIVE中的一种。默认是不设置（驱动自行处理）。 -->
+	
+	<select id="findUserDataById" parameterType="java.lang.String"
+		resultType="UserInfoAndDataManager">
+        <![CDATA[ 
+            SELECT 
+             *
+            FROM t_userdata 
+            WHERE UserId = #{userId} 
+        ]]>
+	</select>
+	<select id="detailUser" parameterType="java.lang.String"
+		resultType="UserInfoAndDataManager">
+        <![CDATA[ 
+            SELECT 
+             *
+            FROM t_userinfo I,t_userdata T
+            WHERE I.UserId = #{userId} 
+            AND I.UserId = T.UserId 
+        ]]>
+	</select>
+	<select id="getUserInfoForLogin" parameterType="java.lang.String"
+		resultType="UserInfoManager">
+        <![CDATA[ 
+            SELECT 
+             *
+            FROM t_userinfo 
+            WHERE UserName = #{username} 
+            AND UserPwd = #{password} 
+        ]]>
+	</select>
+	<select id="getUserInfoForValidate" resultType="int">
+		SELECT
+		COUNT( *)
+		FROM t_userinfo
+		WHERE UserName = #{UserName}
+		<if test="UserId !=null and UserId !='' ">
+			and UserId != #{UserId}
+		</if>
+		AND Status !=99
+	</select>
+	<select id="getUserListByOrganId" resultType="UserInfoAndDataManager">
+		SELECT
+			(
+				SELECT
+					i.UserName
+				FROM
+					t_userinfo i
+				WHERE
+					i.UserId = d.UserId
+			) AS Account,
+			d.UserId,
+			d.FullName,
+			d.OrganId,
+			d. STATUS,
+			d.CreatePerson,
+			d.CreateTime
+		FROM
+			t_userdata d
+		WHERE
+			d. STATUS != '99'
+		<if test="OrganId !=null or OrganId !='' ">
+			AND ORGANID = #{OrganId}
+		</if>
+	</select>
+	<!-- 按照fullname username status进行查询  -->
+	<select id="getUserByCondition" resultType="UserInfoAndDataManager">
+	 	SELECT
+			i.UserName AS Account,
+			d.UserId,
+			d.FullName,
+			d.OrganId,
+			d. STATUS,
+			d.CreatePerson,
+			d.CreateTime
+		FROM
+		t_userdata d
+		LEFT JOIN t_userinfo i ON i.UserId = d.UserId
+		WHERE
+			d. STATUS != '99'
+	     <if test="Status !=null and Status !=''">
+			AND d. STATUS = #{Status}
+		 </if>
+		 <if test="UserName !=null and UserName !=''">
+			AND i.UserName = #{UserName}
+		 </if>
+		 <if test="FullName !=null and FullName !=''">
+			AND d.FullName = #{FullName}
+		 </if>
+	</select>
+	<update id="changeUserInfoStatus" parameterType="UserInfoManager">
+        <![CDATA[ 
+            UPDATE t_userinfo SET 
+             STATUS=#{Status},
+             UPDATETIME=#{UpdateTime},
+             UPDATEPERSON=#{UpdatePerson}
+            WHERE USERID = #{UserId} 
+        ]]>
+	</update>
+	
+	<update id="changeUserDataStatus" parameterType="UserInfoManager">
+        <![CDATA[ 
+            UPDATE t_userdata SET 
+             STATUS=#{Status},
+             UPDATETIME=#{UpdateTime},
+             UPDATEPERSON=#{UpdatePerson}
+            WHERE USERID = #{UserId} 
+        ]]>
+	</update>
+	<select id="getUserInfoForUpdatePwd" parameterType="java.lang.String"
+		resultType="int">
+        <![CDATA[ 
+            SELECT 
+            COUNT( *)
+            FROM t_userinfo 
+            WHERE UserId = #{UserId} 
+            AND UserPwd = #{UserPwd} 
+            AND Status !=99
+        ]]>
+	</select>
+	<select id="getUserInfoForValidatePwd" parameterType="java.lang.String"
+		resultType="int">
+        <![CDATA[ 
+            SELECT 
+            COUNT( *)
+            FROM t_userinfo 
+            WHERE UserName = #{UserName} 
+            AND UserPwd = #{UserPwd} 
+            AND Status !=99
+        ]]>
+	</select>
+	<select id="getUserInfoForValidateUserStatus" parameterType="java.lang.String"
+		resultType="int">
+        <![CDATA[ 
+            SELECT 
+            COUNT( *)
+            FROM t_userinfo 
+            WHERE UserName = #{UserName} 
+            AND UserPwd = #{UserPwd} 
+            AND Status =1
+        ]]>
+	</select>
+	<select id="getUserDataByUserId" parameterType="java.lang.String"
+		resultType="UserDataManager">
+        <![CDATA[ 
+            SELECT 
+             *
+            FROM t_userdata 
+            WHERE UserId = #{userId} 
+        ]]>
+	</select>
+	<select id="getUserInfoByUserId" parameterType="java.lang.String"
+		resultType="UserInfoManager">
+        <![CDATA[ 
+            SELECT 
+            *
+            FROM t_userinfo i
+            WHERE UserId = #{UserId} 
+        ]]>
+	</select>
+
+	<select id="getAllUser" resultType="UserInfoManager">
+        <![CDATA[ 
+            SELECT 
+             *
+            FROM t_userinfo i
+            WHERE
+            I.Status != '99' 
+        ]]>
+	</select>
+	<select id="getAllUserList" resultType="UserInfoAndDataManager">
+		SELECT
+			i.UserName AS Account,
+			i.Status as InfoStatus,
+			d.UserId,
+			d.FullName,
+			d.OrganId,
+			d. STATUS,
+			d.CreatePerson,
+			d.CreateTime,
+			d.UpdateTime
+		FROM
+			t_userdata d left join t_userinfo i on(d.UserId=i.UserId and i.Status !='99')
+		WHERE
+			d. STATUS != '99'
+	</select>
+	<select id="getAllUserListlCount" resultType="int">
+		select count(*)
+		from
+		t_userinfo i LEFT JOIN t_userdata d on i.UserId=d.UserId
+		WHERE
+		i.Status != '99'
+		<if test="Status ==1 or Status ==0 ">
+			and i.Status=#{Status}
+		</if>
+		<if test="UserName !=null and UserName !='' ">
+			and i.UserName LIKE CONCAT(CONCAT('%', #{UserName}), '%')
+		</if>
+		<if test="FullName !=null and FullName !='' ">
+			and FullName LIKE CONCAT(CONCAT('%', #{FullName}), '%')
+		</if>
+	</select>
+
+	<update id="updateUserStatus">
+		UPDATE t_userdata SET
+		UpdateTime=#{UpdateTime},
+		UpdatePerson=#{UpdatePerson},
+		Status=#{Status}
+		WHERE UserId IN
+		<foreach item="item" index="index" collection="UserIds" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<update id="updateUserInfo" parameterType="UserInfoManager">
+        <![CDATA[ 
+            UPDATE t_userinfo SET 
+             UserName=#{UserName}, 
+             UserKey=#{UserKey},
+             Status=#{Status},
+             UpdateTime=#{UpdateTime},
+             UpdatePerson=#{UpdatePerson},
+			 IsReserved=#{IsReserved}           
+            WHERE UserId = #{UserId} 
+        ]]>
+	</update>
+	<update id="updateUserPwd" parameterType="UserInfoManager">
+        <![CDATA[ 
+            UPDATE t_userinfo SET 
+             UserPwd=#{UserPwd},
+             UpdateTime=#{UpdateTime},
+             UpdatePerson=#{UpdatePerson}
+            WHERE UserId = #{UserId} 
+        ]]>
+	</update>
+	
+	<update id="changeStatus" parameterType="UserInfoAndDataManager">
+        <![CDATA[ 
+       		UPDATE t_userdata
+			SET
+			 STATUS = #{Status},
+			 UpdateTime = #{UpdateTime},
+			 UpdatePerson = #{UpdatePerson}
+			WHERE
+				UserId = #{UserId} 
+        ]]>
+	</update>
+	
+	<update id="updateAccountById" parameterType="java.util.Map">
+        <![CDATA[ 
+       		UPDATE t_userinfo
+			SET
+			 STATUS = #{Status},
+			 UpdateTime = #{UpdateTime},
+			 UpdatePerson = #{UpdatePerson}
+			WHERE
+				UserId = #{UserId} 
+        ]]>
+	</update>
+	
+	
+	
+	<update id="updateUserData" parameterType="UserDataManager">
+             UPDATE t_userdata SET 
+             UserId=#{UserId},
+             <if test="FullName !=null">
+             FullName=#{FullName},
+             </if>
+             <if test="ContactPhone !=null">
+             ContactPhone=#{ContactPhone},
+             </if>
+             <if test="OfficePhone !=null">
+             OfficePhone=#{OfficePhone},
+             </if>
+             <if test="FaxNumber !=null">
+             FaxNumber=#{FaxNumber},
+             </if>
+             <if test="EmailAddress !=null">
+              EmailAddress=#{EmailAddress},
+             </if>
+             <if test="ContactAddress !=null">
+              ContactAddress=#{ContactAddress},
+             </if>
+             <if test="ZipCode !=null">
+             ZipCode=#{ZipCode},
+             </if>
+             <if test="OrganId !=null">
+               OrganId=#{OrganId},
+             </if>
+             <if test="DetpId !=null">
+             DetpId=#{DetpId},
+             </if>
+             <if test="UserLogo !=null">
+             UserLogo=#{UserLogo},
+             </if>
+             <if test="UserRemark !=null">
+              UserRemark=#{UserRemark},
+             </if>
+             <if test="Status !=null">
+             Status=#{Status},
+             </if>
+             <if test="EnName !=null">
+              EnName=#{EnName},
+             </if>
+             <if test="PersonCode !=null">
+             PersonCode=#{PersonCode},
+             </if>
+             <if test="FirstName !=null">
+             FirstName=#{FirstName},
+             </if>
+             <if test="LastName !=null">
+             LastName=#{LastName},
+             </if>
+             <if test="CnameShortSpell !=null">
+             CnameShortSpell=#{CnameShortSpell},
+             </if>
+             <if test="CnameFullSpell !=null">
+             CnameFullSpell=#{CnameFullSpell},
+             </if>
+             <if test="CardNum !=null">
+             CardNum=#{CardNum},
+             </if>
+             <if test="CardCode !=null">
+             CardCode=#{CardCode},
+             </if>
+             <if test="Sex !=null">
+             Sex=#{Sex},
+             </if>
+             <if test="Birthday !=null">
+             Birthday=#{Birthday},
+             </if>
+             <if test="MarryCode !=null">
+             MarryCode=#{MarryCode},
+             </if>
+             <if test="PoliticCode !=null">
+             PoliticCode=#{PoliticCode},
+             </if>
+             <if test="DegreeCode !=null">
+             DegreeCode=#{DegreeCode},
+             </if>
+             <if test="EduCode !=null">
+             EduCode=#{EduCode},
+             </if>
+             <if test="PostLevel !=null">
+             PostLevel=#{PostLevel},
+             </if>
+             <if test="HomeTel !=null">
+             HomeTel=#{HomeTel},
+             </if>
+             <if test="HomeFax !=null">
+             HomeFax=#{HomeFax},
+             </if>
+             <if test="MSN !=null">
+             MSN=#{MSN},
+             </if>
+             <if test="QQ !=null">
+             QQ=#{QQ},
+             </if>
+             <if test="MSN !=null">
+             MSN=#{MSN},
+             </if>
+             <if test="HomePage !=null">
+             HomePage=#{HomePage},
+             </if>
+             <if test="IsImpContact !=null">
+             IsImpContact=#{IsImpContact},
+             </if>
+             <if test="NativePiace !=null">
+             NativePiace=#{NativePiace},
+             </if>
+             <if test="Country !=null">
+             Country=#{Country},
+             </if>
+             <if test="ProvinceId !=null">
+             ProvinceId=#{ProvinceId},
+             </if>
+             <if test="CityId !=null">
+             CityId=#{CityId},
+             </if>
+             <if test="SeqNum !=null">
+             SeqNum=#{SeqNum},
+             </if>
+             <if test="RoomNum !=null">
+             RoomNum=#{RoomNum},
+             </if>
+             <if test="SecurityLevel !=null">
+              SecurityLevel=#{SecurityLevel},
+             </if>
+             <if test="OtherInfo !=null">
+             OtherInfo=#{OtherInfo},
+             </if>
+             <if test="Signature !=null">
+             Signature=#{Signature},
+             </if>
+             <if test="SignatureFileId !=null">
+             SignatureFileId=#{SignatureFileId},
+             </if>
+             UpdatePerson=#{UpdatePerson},
+             UpdateTime=#{UpdateTime}
+        WHERE 
+            UserId=#{UserId}
+	</update>
+
+	<!-- insert 元素： -->
+	<!-- 1）useGeneratedKeys：这会告诉MyBatis使用JDBC的getGeneratedKeys方法来取出由数据（比如：像MySQL和SQL 
+		Server这样的数据库管理系统的自动递增字段）内部生成的主键。默认值：false。 -->
+	<!-- 2）keyProperty：标记一个属性（自动生成的那个属性，比如主键id），MyBatis会通过getGeneratedKeys或者通过insert语句的selectKey子元素设置它的值。默认：不设置。 -->
+	<insert id="insertUserInfo" parameterType="UserInfoManager">
+		 INSERT INTO t_userinfo 
+        (
+            UserId,UserName,UserPwd,UserKey,Status,
+            CreatePerson,CreateTime,UpdatePerson,UpdateTime,IsReserved
+        ) 
+        VALUES 
+        (
+         #{UserId},#{UserName},#{UserPwd},#{UserKey},#{Status},
+         #{CreatePerson},#{CreateTime},#{UpdatePerson},#{UpdateTime},#{IsReserved}
+        )
+		
+	</insert>
+	<insert id="insertUserData" parameterType="UserDataManager">
+		INSERT INTO t_userdata
+		(
+		UserId,FullName,ContactPhone,OfficePhone,FaxNumber,EmailAddress,ContactAddress,ZipCode,OrganId,
+		DetpId,UserLogo,UserRemark,Status,CreatePerson,CreateTime,UpdatePerson,UpdateTime,EnName,PersonCode,
+		FirstName,LastName,CnameShortSpell,CnameFullSpell,CardNum,CardCode,Sex,Birthday,Nation,MarryCode,
+		PoliticCode,DegreeCode,EduCode,PostLevel,HomeTel,HomeFax,MSN,QQ,HomePage,IsImpContact,NativePiace,
+		Country,ProvinceId,CityId,SeqNum,RoomNum,SecurityLevel,OtherInfo,Signature,SignatureFileId
+		)
+		VALUES
+		(
+		#{UserId},#{FullName},#{ContactPhone},#{OfficePhone},#{FaxNumber},#{EmailAddress},#{ContactAddress},
+		#{ZipCode},#{OrganId},#{DetpId},#{UserLogo},#{UserRemark},#{Status},#{CreatePerson},#{CreateTime},
+		#{UpdatePerson},#{UpdateTime},#{EnName},#{PersonCode},#{FirstName},#{LastName},#{CnameShortSpell},
+		#{CnameFullSpell},#{CardNum},#{CardCode},#{Sex},#{Birthday},#{Nation},#{MarryCode},#{PoliticCode},
+		#{DegreeCode},#{EduCode},#{PostLevel},#{HomeTel},#{HomeFax},#{MSN},#{QQ},#{HomePage},#{IsImpContact},
+		#{NativePiace},#{Country},#{ProvinceId},#{CityId},#{SeqNum},#{RoomNum},#{SecurityLevel},#{OtherInfo},
+		#{Signature},#{SignatureFileId}
+		)
+	</insert>
+
+	<delete id="deleteUser" parameterType="java.lang.String">
+		delete from User where id=#{id}
+	</delete>
+</mapper>

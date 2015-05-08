@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- -->
+<mapper namespace="com.framework.maps.Rightsmanager">
+
+	<!-- insert 元素：添加一条记录 -->
+	<insert id="add" parameterType="Rightsmanager">
+		INSERT INTO t_role_module_rela
+		(
+		RightsId,
+		RoleName,
+		ModuleId,
+		Status,
+		CreatePerson,
+		CreateTime,
+		UpdatePerson,
+		UpdateTime
+		)
+		VALUES
+		(
+		#{RightsId},
+		#{RoleName},
+		#{ModuleId},
+		#{Status},
+		#{CreatePerson},
+		#{CreateTime},
+		#{UpdatePerson},
+		#{UpdateTime}
+		)
+	</insert>
+
+	<!-- insert 元素：添加多条记录 -->
+	<insert id="addList" parameterType="Rightsmanager">
+		INSERT INTO t_role_module_rela
+		(
+		RightsId,
+		RoleName,
+		ModuleId,
+		Status,
+		CreatePerson,
+		CreateTime,
+		UpdatePerson,
+		UpdateTime
+		)
+		VALUES
+		<foreach collection="list" item="lt" index="index" separator=",">
+			(
+			#{lt.RightsId},
+			#{lt.RoleName},
+			#{lt.ModuleId},
+			#{lt.Status},
+			#{lt.CreatePerson},
+			#{lt.CreateTime},
+			#{lt.UpdatePerson},
+			#{lt.UpdateTime}
+			)
+		</foreach>
+	</insert>
+
+	<!-- update 元素：更新一条记录 -->
+	<update id="update" parameterType="Rightsmanager">
+		UPDATE t_role_module_rela SET
+		RoleName=#{RoleName},
+		ModuleId=#{ModuleId},
+		Status=#{Status},
+		CreatePerson=#{CreatePerson},
+		CreateTime=#{CreateTime},
+		UpdatePerson=#{UpdatePerson},
+		UpdateTime=#{UpdateTime}
+		WHERE
+		RightsId=#{RightsId}
+	</update>
+
+	<!-- update 元素：更新状态 -->
+	<update id="updateStatus" parameterType="Rightsmanager">
+		UPDATE t_role_module_rela SET
+		Status=#{Status},
+		UpdatePerson=#{UpdatePerson},
+		UpdateTime=#{UpdateTime}
+		WHERE
+		RightsId=#{RightsId}
+	</update>
+
+	<!-- update 元素：更新多条记录 -->
+	<update id="updateStatusByIds" parameterType="java.util.Map">
+		UPDATE t_role_module_rela SET
+		Status=#{Status},
+		UpdatePerson=#{UpdatePerson},
+		UpdateTime=#{UpdateTime}
+		WHERE
+		RightsId IN
+		<foreach item="item" index="index" collection="ids" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<!-- delete 元素：根据主键删除一条记录 -->
+	<delete id="delete" parameterType="java.lang.String">
+		DELETE FROM t_role_module_rela
+		WHERE
+		RightsId=#{RightsId}
+	</delete>
+
+	<delete id="deleteBynMame" parameterType="java.lang.String">
+		DELETE FROM t_role_module_rela
+		WHERE
+		RoleName=#{RoleName}
+	</delete>
+	<!-- update 元素：逻辑删除一条记录 -->
+	<update id="deleteByLogic" parameterType="java.lang.String">
+		UPDATE t_role_module_rela SET
+		Status=99,
+		UpdatePerson=#{UpdatePerson},
+		UpdateTime=#{UpdateTime}
+		WHERE
+		RightsId=#{RightsId}
+	</update>
+
+	<!-- update 元素：逻辑删除多条记录 -->
+	<update id="deleteBatch" parameterType="java.util.Map">
+		UPDATE t_role_module_rela SET
+		Status=99,
+		UpdatePerson=#{UpdatePerson},
+		UpdateTime=#{UpdateTime}
+		WHERE
+		RightsId IN
+		<foreach item="item" index="index" collection="ids" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<!-- select 元素：查询所有的记录 -->
+	<select id="findAll" resultType="Rightsmanager">
+		SELECT * FROM t_role_module_rela
+		WHERE
+		Status!=99
+	</select>
+
+	<!-- select 元素：根据主键获取数据 -->
+	<select id="findById" resultType="Rightsmanager">
+		SELECT * FROM t_role_module_rela
+		WHERE
+		RightsId=#{RightsId}
+		AND Status!=99
+	</select>
+
+	<!-- select 元素：获取记录条数 -->
+	<select id="count">
+		SELECT COUNT(*) FROM t_role_module_rela
+		WHERE
+		RightsId=#{RightsId}
+		AND Status!=99
+	</select>
+</mapper>

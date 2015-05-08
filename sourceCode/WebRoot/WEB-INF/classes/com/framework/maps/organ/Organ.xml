@@ -1,0 +1,288 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--  -->
+<mapper namespace="com.framework.maps.Organ">
+
+    <!-- insert 元素：添加一条记录 -->
+    <insert id="add" parameterType="Organ">
+        INSERT INTO t_organ 
+        (
+            OrganId,
+            Cname,
+            ShortCname,
+            OrgCode,
+            Enname,
+            OrgGrade,
+            ParentId,
+            OrgPhone,
+            OrgAddr,
+            OrgEmail,
+            OrgDoorNum,
+            SeqNum,
+            Status,
+            Memo,
+            RespPerson,
+            LinkMan,
+            CreatePerson,
+            CreateTime,
+            UpdatePerson,
+            UpdateTime,
+            IsResrved,
+            TreePath
+        ) 
+        VALUES 
+        (
+         #{OrganId},
+         #{Cname},
+         #{ShortCname},
+         #{OrgCode},
+         #{Enname},
+         #{OrgGrade},
+         #{ParentId},
+         #{OrgPhone},
+         #{OrgAddr},
+         #{OrgEmail},
+         #{OrgDoorNum},
+         #{SeqNum},
+         #{Status},
+         #{Memo},
+         #{RespPerson},
+         #{LinkMan},
+         #{CreatePerson},
+         #{CreateTime},
+         #{UpdatePerson},
+         #{UpdateTime},
+         #{IsResrved},
+         #{TreePath}
+        )
+    </insert>
+    
+    <!-- insert 元素：添加多条记录 -->
+    <insert id="addList" parameterType="Organ">
+        INSERT INTO t_organ 
+        (
+            OrganId,
+            Cname,
+            ShortCname,
+            OrgCode,
+            Enname,
+            OrgGrade,
+            ParentId,
+            OrgPhone,
+            OrgAddr,
+            OrgEmail,
+            OrgDoorNum,
+            SeqNum,
+            Status,
+            Memo,
+            RespPerson,
+            LinkMan,
+            CreatePerson,
+            CreateTime,
+            UpdatePerson,
+            UpdateTime,
+            IsResrved,
+            TreePath
+        ) 
+        VALUES 
+        <foreach collection="list" item="lt" index="index" separator=",">
+        (
+             #{lt.OrganId},
+             #{lt.Cname},
+             #{lt.ShortCname},
+             #{lt.OrgCode},
+             #{lt.Enname},
+             #{lt.OrgGrade},
+             #{lt.ParentId},
+             #{lt.OrgPhone},
+             #{lt.OrgAddr},
+             #{lt.OrgEmail},
+             #{lt.OrgDoorNum},
+             #{lt.SeqNum},
+             #{lt.Status},
+             #{lt.Memo},
+             #{lt.RespPerson},
+             #{lt.LinkMan},
+             #{lt.CreatePerson},
+             #{lt.CreateTime},
+             #{lt.UpdatePerson},
+             #{lt.UpdateTime},
+             #{lt.IsResrved},
+             #{lt.TreePath}
+        )
+        </foreach>
+    </insert>
+    
+    <!-- update 元素：更新一条记录 -->
+    <update id="update" parameterType="Organ">
+        UPDATE t_organ SET 
+             OrganId=#{OrganId},
+             Cname=#{Cname},
+             ShortCname=#{ShortCname},
+             OrgCode=#{OrgCode},
+             Enname=#{Enname},
+             OrgGrade=#{OrgGrade},
+             ParentId=#{ParentId},
+             OrgPhone=#{OrgPhone},
+             OrgAddr=#{OrgAddr},
+             OrgEmail=#{OrgEmail},
+             OrgDoorNum=#{OrgDoorNum},
+             SeqNum=#{SeqNum},
+             Status=#{Status},
+             Memo=#{Memo},
+             RespPerson=#{RespPerson},
+             LinkMan=#{LinkMan},
+             UpdatePerson=#{UpdatePerson},
+             UpdateTime=#{UpdateTime},
+             IsResrved=#{IsResrved},
+             TreePath=#{TreePath}
+        WHERE 
+            OrganId=#{OrganId}
+    </update>
+    
+    <!-- update 元素：更新状态 -->
+    <update id="updateStatus" parameterType="Organ">
+        UPDATE t_organ SET 
+            Status=#{Status},
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE 
+            OrganId=#{OrganId}
+    </update>
+    
+    <!-- update 元素：更新多条记录 -->
+    <update id="updateStatusByIds" parameterType="java.util.Map">
+        UPDATE t_organ SET 
+            Status=#{Status},
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE 
+            OrganId IN 
+            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+                #{item}  
+            </foreach> 
+    </update>
+    
+    <!-- delete 元素：根据主键删除一条记录 -->
+    <delete id="delete" parameterType="java.lang.String">
+        DELETE FROM t_organ 
+        WHERE 
+            OrganId=#{OrganId}
+    </delete>
+    
+    <!-- update 元素：逻辑删除一条记录 -->
+    <update id="deleteByLogic" parameterType="java.lang.String">
+        UPDATE t_organ SET 
+            Status=99,
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE
+            OrganId=#{OrganId}
+    </update>
+    
+    <!-- update 元素：逻辑删除多条记录 -->
+    <update id="deleteBatch" parameterType="java.util.Map">
+        UPDATE t_organ SET 
+            Status=99,
+            UpdatePerson=#{UpdatePerson},
+            UpdateTime=#{UpdateTime}
+        WHERE 
+            OrganId IN 
+            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+                #{item}  
+            </foreach> 
+    </update>
+
+    <!-- select 元素：查询所有的记录 -->
+    <select id="findAll" resultType="Organ">
+        
+        SELECT * FROM t_organ 
+        WHERE 
+            Status!=99
+             <if test="OrganId != null and OrganId !='' ">
+		     AND OrganId LIKE CONCAT('%','${OrganId}','%' ) 
+		  	</if>   
+             <if test="Cname != null and Cname !='' ">
+		     AND Cname LIKE CONCAT('%','${Cname}','%' ) 
+		  	</if>   
+             <if test="ShortCname != null and ShortCname !='' ">
+		     AND ShortCname LIKE CONCAT('%','${ShortCname}','%' ) 
+		  	</if>   
+             <if test="OrgCode != null and OrgCode !='' ">
+		     AND OrgCode LIKE CONCAT('%','${OrgCode}','%' ) 
+		  	</if>   
+             <if test="Enname != null and Enname !='' ">
+		     AND Enname LIKE CONCAT('%','${Enname}','%' ) 
+		  	</if>   
+             <if test="OrgGrade != null and OrgGrade !='' ">
+		     AND OrgGrade LIKE CONCAT('%','${OrgGrade}','%' ) 
+		  	</if>   
+             <if test="ParentId != null and ParentId !='' ">
+		     AND ParentId =#{ParentId} 
+		  	</if>   
+             <if test="OrgPhone != null and OrgPhone !='' ">
+		     AND OrgPhone LIKE CONCAT('%','${OrgPhone}','%' ) 
+		  	</if>   
+             <if test="OrgAddr != null and OrgAddr !='' ">
+		     AND OrgAddr LIKE CONCAT('%','${OrgAddr}','%' ) 
+		  	</if>   
+             <if test="OrgEmail != null and OrgEmail !='' ">
+		     AND OrgEmail LIKE CONCAT('%','${OrgEmail}','%' ) 
+		  	</if>   
+             <if test="OrgDoorNum != null and OrgDoorNum !='' ">
+		     AND OrgDoorNum LIKE CONCAT('%','${OrgDoorNum}','%' ) 
+		  	</if>   
+             <if test="SeqNum != null and SeqNum !='' ">
+		     AND SeqNum LIKE CONCAT('%','${SeqNum}','%' ) 
+		  	</if>   
+             <if test="Status != null and Status !='' ">
+		     AND Status LIKE CONCAT('%','${Status}','%' ) 
+		  	</if>   
+             <if test="Memo != null and Memo !='' ">
+		     AND Memo LIKE CONCAT('%','${Memo}','%' ) 
+		  	</if>   
+             <if test="RespPerson != null and RespPerson !='' ">
+		     AND RespPerson LIKE CONCAT('%','${RespPerson}','%' ) 
+		  	</if>   
+             <if test="LinkMan != null and LinkMan !='' ">
+		     AND LinkMan LIKE CONCAT('%','${LinkMan}','%' ) 
+		  	</if>   
+             <if test="CreatePerson != null and CreatePerson !='' ">
+		     AND CreatePerson LIKE CONCAT('%','${CreatePerson}','%' ) 
+		  	</if>   
+             <if test="CreateTime != null and CreateTime !='' ">
+		     AND CreateTime LIKE CONCAT('%','${CreateTime}','%' ) 
+		  	</if>   
+             <if test="UpdatePerson != null and UpdatePerson !='' ">
+		     AND UpdatePerson LIKE CONCAT('%','${UpdatePerson}','%' ) 
+		  	</if>   
+             <if test="UpdateTime != null and UpdateTime !='' ">
+		     AND UpdateTime LIKE CONCAT('%','${UpdateTime}','%' ) 
+		  	</if>   
+             <if test="IsResrved != null and IsResrved !='' ">
+		     AND IsResrved LIKE CONCAT('%','${IsResrved}','%' ) 
+		  	</if>   
+    </select>
+    
+    <!-- select 元素：根据主键获取数据 -->
+    <select id="findById" resultType="Organ">
+        <![CDATA[
+        SELECT * FROM t_organ 
+        WHERE 
+            OrganId=#{OrganId}
+            AND Status!=99
+        ]]>
+    </select>
+    
+    <!-- select 元素：获取记录条数 -->
+    <select id="count">
+        <![CDATA[
+        SELECT COUNT(*) FROM t_organ 
+        WHERE
+            OrganId=#{OrganId}
+            AND Status!=99
+        ]]>
+    </select>
+</mapper>

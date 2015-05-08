@@ -1,0 +1,13 @@
+div.message{   
+	background: transparent url(../images/msg_arrow.gif) no-repeat scroll left center;   
+	padding-left: 7px; 
+}  
+div.error{    
+	background-color:#F3E6E6; 
+	border-color: #924949;    
+	border-style: solid solid solid none; 
+	border-width: 2px;    
+	padding: 5px;
+	height: 20px;
+	line-height: 20px;
+}

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.framework.role">
+	<select id="getUserRoleByUserId" parameterType="java.lang.String"
+		resultType="UserRoleManager">
+        <![CDATA[ 
+            SELECT 
+             *
+            FROM USERROLEMANAGER
+            WHERE USERID = #{userId}
+        ]]>
+	</select>
+		<update id="updateRoleStatus" parameterType="Rolemanager">
+		update
+		ROLEMANAGER set
+		STATUS=#{Status},UPDATEPERSON=#{UpdatePerson},UPDATETIME=#{UpdateTime}
+		where ROLENAME=#{RoleName}
+	</update>
+	<select id="getRoleByUserId" parameterType="java.lang.String"
+		resultType="RoleManager">
+        <![CDATA[ 
+        	SELECT * 
+        	FROM ROLEMANAGER
+        	WHERE ROLENAME IN
+        	(SELECT 
+            ROLENAME
+            FROM USERROLEMANAGER
+            WHERE USERID = #{userId}
+            )
+            AND STATUS = 1
+        ]]>
+	</select>
+		<select id="getRoleByRoleName" parameterType="java.lang.String"
+		resultType="RoleManager">
+        <![CDATA[ 
+        	SELECT * 
+        	FROM ROLEMANAGER
+        	WHERE ROLENAME=#{RoleName}
+        ]]>
+	</select>
+	<select id="findAll" resultType="RoleManager">
+	select R.ROLENAME,
+	(CASE WHEN L.ROLEREMARK IS NULL THEN R.ROLEREMARK ELSE L.ROLEREMARK END) as ROLEREMARK,
+	R.ROLENUMBER,R.STATUS,R.CREATEPERSON,R.CREATETIME,R.UPDATEPERSON,R.UPDATETIME from ROLEMANAGER R
+	LEFT JOIN ROLEML L ON (R.ROLENAME=L.ROLENAME AND L.LANGUAGECODE=#{locale})	where R.STATUS!=99 ORDER BY R.ROLENUMBER ASC
+	</select>
+	<!-- select 元素：根据主键获取数据 -->
+	<select id="findById" resultType="Rolemanager">
+	select R.ROLENAME,
+	(CASE WHEN L.ROLEREMARK IS NULL THEN R.ROLEREMARK ELSE L.ROLEREMARK END) as ROLEREMARK,
+	R.ROLENUMBER,R.STATUS,R.CREATEPERSON,R.CREATETIME,R.UPDATEPERSON,R.UPDATETIME from ROLEMANAGER R
+	LEFT JOIN ROLEML L ON (R.ROLENAME=L.ROLENAME AND L.LANGUAGECODE=#{locale})	where R.STATUS!=99 and R.ROLENAME=#{RoleName} ORDER BY R.ROLENUMBER ASC
+	</select>
+	<select id="findByRoleName" resultType="int">
+		select (select count(*) from USERROLEMANAGER where ROLENAME in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		)+
+		(select count(*) from RIGHTSMANAGER where ROLENAME in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		)
+		as
+		isExists from dual
+
+	</select>
+
+	<!-- insert 元素：添加一条记录 -->
+	<insert id="add" parameterType="Rolemanager">
+		INSERT INTO ROLEMANAGER
+		(
+		ROLENAME,
+		ROLEREMARK,
+		ROLENUMBER,
+		STATUS,
+		CREATEPERSON,
+		CREATETIME,
+		UPDATEPERSON,
+		UPDATETIME
+		)
+		VALUES
+		(
+		#{RoleName},
+		#{RoleRemark},
+		#{RoleNumber},
+		#{Status},
+		#{CreatePerson},
+		#{CreateTime},
+		#{UpdatePerson},
+		#{UpdateTime}
+		)
+	</insert>
+	<update id="update" parameterType="Rolemanager">
+		UPDATE ROLEMANAGER SET
+		ROLEREMARK=#{RoleRemark},
+		ROLENUMBER=#{RoleNumber},
+		STATUS=#{Status},
+		UPDATEPERSON=#{UpdatePerson},
+		UPDATETIME=#{UpdateTime}
+		WHERE
+		ROLENAME=#{RoleName}
+	</update>
+	<update id="delRole1" parameterType="Rolemanager">
+		update ROLEMANAGER set STATUS='99',
+		UPDATEPERSON=#{UpdatePerson},
+		UPDATETIME=#{UpdateTime} where ROLENAME in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		
+	</update>
+	<update id="delRole2" parameterType="Rolemanager">
+		update USERROLEMANAGER set STATUS='99',
+		UPDATEPERSON=#{UpdatePerson},
+		UPDATETIME=#{UpdateTime}
+		 where ROLENAME in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		
+	</update>
+	<update id="delRole3" parameterType="Rolemanager">
+		update RIGHTSMANAGER set STATUS='99',
+		UPDATEPERSON=#{UpdatePerson},
+		UPDATETIME=#{UpdateTime} where ROLENAME in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		
+	</update>
+</mapper>

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+			http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"  
+			version="3.1">
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<!-- spring配置文件必须以applicationContext-作为前缀 之后按照功能区分 eg: common -->
+		<param-value>
+			classpath:applicationContext-*.xml
+		</param-value>
+	</context-param>
+
+	<!-- Spring 加载内容 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<!-- Spring 刷新Introspector防止内存泄露 -->
+	<listener>
+		<listener-class>
+			org.springframework.web.util.IntrospectorCleanupListener
+		</listener-class>
+	</listener>
+	<listener>
+		<listener-class>com.core.session.SessionListener</listener-class>
+	</listener>
+	<!-- session超时定义,单位为分钟 -->
+	<session-config>
+		<session-timeout>50</session-timeout>
+	</session-config>
+	<!-- 设置编码过滤器 的编码类型jsp与java交互时，产生的编码类型不同，就会调用这个过滤器,完成字符集转换功能 -->
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name><!-- 用来指定一个具体的字符集 -->
+			<param-value>utf-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>*.*</url-pattern>
+	</filter-mapping>
+	<!-- 获取当前浏览器的语言，保存到session中 -->
+	<filter>
+		<filter-name>localeFilter</filter-name>
+		<filter-class>com.core.filter.LocaleFilter</filter-class>
+		<init-param>
+			<param-name>locale</param-name><!-- 用来指定一个具体的字符集 -->
+			<param-value>en_US</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>localeFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- 获取当前浏览器的语言，保存到session中 -->
+
+	<!-- 检查用户是否登录了系统的过滤器配置 开始 -->
+	<filter>
+		<filter-name>SessionFilter</filter-name>
+		<filter-class>com.core.filter.SessionFilter</filter-class>
+		<init-param>
+			<param-name>sessionKey</param-name>
+			<param-value>userInfo</param-value>
+		</init-param>
+		<init-param>
+			<param-name>redirectUrl</param-name>
+			<param-value>/login.jsp</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forwardUrl</param-name>
+			<param-value>/login.jsp</param-value>
+		</init-param>
+		<init-param>
+			<param-name>excepUrl</param-name>
+			<param-value>/loginAction/loginPage.action</param-value>
+		</init-param>
+		<init-param>
+			<param-name>excepUrl2</param-name>
+			<param-value>/loginAction/Login.action</param-value>
+		</init-param>
+		<init-param>
+			<param-name>excepUrl3</param-name>
+			<param-value>/loginAction/changeLanguageLogin.action</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>SessionFilter</filter-name>
+		<url-pattern>*.action</url-pattern>
+	</filter-mapping> 
+	<!--检查用户是否登录了系统的过滤器配置 结束 -->
+	<!-- 加载log4j配置文件 -->
+	<!-- <listener> <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class> 
+		</listener> -->
+		<!-- 用于在Spring mvc 中获取request-->
+	<listener>
+        <listener-class>
+            org.springframework.web.context.request.RequestContextListener
+        </listener-class>
+    </listener>
+	<!-- 配置shiro过滤器 结束-->
+	<filter>
+		<filter-name>shiroFilter</filter-name>
+	    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	    <init-param>  
+	        <param-name>targetFilterLifecycle</param-name>  
+	        <param-value>true</param-value>  
+    	</init-param>  
+  	</filter>
+  	<filter-mapping>
+	    <filter-name>shiroFilter</filter-name>
+	    <url-pattern>/*</url-pattern>
+  	</filter-mapping>
+	<!-- 配置shiro过滤器 结束-->
+	<!-- 配置struts2过滤器 -->
+	<filter>
+		<filter-name>struts2</filter-name>
+		<filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>struts2</filter-name>
+		<url-pattern>*.action</url-pattern>
+		<url-pattern>*.jsp</url-pattern>
+	</filter-mapping>
+	<welcome-file-list>
+		<welcome-file>login.jsp</welcome-file>
+	</welcome-file-list>
+	<!-- 配置自定义标签 -->
+	<jsp-config>
+		<taglib>
+			<taglib-uri>/WEB-INF/taglib/cw</taglib-uri>
+			<taglib-location>/WEB-INF/taglib/cw.tld</taglib-location>
+		</taglib>
+	</jsp-config>
+	<!-- 配置servlet -->
+	<servlet>
+		<servlet-name>DisplayChart</servlet-name>
+		<servlet-class>org.jfree.chart.servlet.DisplayChart</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DisplayChart</servlet-name>
+		<url-pattern>/servlet/DisplayChart</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<description>swf上传文件到FTP文件库</description>
+		<servlet-name>SwfFileUploadServlet</servlet-name>
+		<servlet-class>com.core.sftps.ftp.SwfFileLoadServelt</servlet-class>
+		<init-param>
+			<param-name>fileSizeLimit</param-name>
+			<param-value>15306</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SwfFileUploadServlet</servlet-name>
+		<url-pattern>/SwfFileUpload</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>AjaxServlet</servlet-name>
+		<servlet-class>com.core.sftps.ftp.AjaxServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AjaxServlet</servlet-name>
+		<url-pattern>/upload/AjaxServlet</url-pattern>
+	</servlet-mapping>
+	<!-- ehcache -->
+	<servlet>
+	  <servlet-name>CacheInit</servlet-name>
+	  <servlet-class>com.core.servlet.CacheInit</servlet-class>
+	  <load-on-startup>1</load-on-startup>
+	</servlet>
+	<!-- cxf -->
+	<servlet>  
+	    <servlet-name>CXFServlet</servlet-name>  
+	    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>  
+	    <load-on-startup>1</load-on-startup>  
+	 </servlet>  
+	 <servlet-mapping>  
+	    <servlet-name>CXFServlet</servlet-name>  
+	    <url-pattern>/ws/*</url-pattern>  
+	    <url-pattern>/rest/*</url-pattern>  
+	 </servlet-mapping>  
+   <servlet>
+    <servlet-name>springmvc</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>/WEB-INF/classes/springmvc-config.xml</param-value>
+    </init-param>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>springmvc</servlet-name>
+    <url-pattern>*.do</url-pattern>
+  </servlet-mapping>
+ 	<!-- <error-page>
+	   <error-code>500</error-code>
+	   <location>/error500.jsp</location>
+	 </error-page>
+	<error-page>
+	   <error-code>404</error-code>
+	   <location>/error404.jsp</location>
+	 </error-page>  -->
+</web-app>

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:cache="http://www.springframework.org/schema/cache"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.1.xsd">
+    <!-- 扫描包 -->
+    <context:component-scan base-package="com.framework.*" />
+    
+     <!-- AOP -->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    
+    <!-- 指定连接文件路径 -->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location">
+            <value>classpath:db.properties</value>
+        </property>
+    </bean>
+    
+    
+	<bean id="ehCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="configLocation" value="classpath:/ehcache.xml" />
+		<property name="shared" value="true" />
+	</bean>
+
+	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">
+		<property name="cacheManager" ref="ehCacheManager" />
+	</bean>
+	
+    <!-- 相关数据源和事务管理的定义 -->
+    <!-- 配置多个dataSource -->
+    <bean id="MySQLdataSource" class="org.enhydra.jdbc.pool.StandardXAPoolDataSource" destroy-method="shutdown">
+		<property name="dataSource"> 
+           <bean class="org.enhydra.jdbc.standard.StandardXADataSource" destroy-method="shutdown"> 
+               <property name="transactionManager" ref="jotm"/> 
+               <property name="driverName" value="${mysql.jdbc.driverClassName}"/> 
+               <property name="url" value="${mysql.jdbc.url}"/> 
+           </bean> 
+       	</property> 
+       	<property name="user" value="${mysql.jdbc.username}"/> 
+       	<property name="password" value="${mysql.jdbc.password}"/> 
+        <property name="maxSize" value="${mysql.jdbc.maxSize}" />
+        <property name="minSize" value="${mysql.jdbc.minSize}" />
+    </bean>
+    <bean id="SQLServerdataSource" class="org.enhydra.jdbc.pool.StandardXAPoolDataSource" destroy-method="shutdown">
+    	<property name="dataSource"> 
+           <bean class="org.enhydra.jdbc.standard.StandardXADataSource" destroy-method="shutdown"> 
+               <property name="transactionManager" ref="jotm"/> 
+               <property name="driverName" value="${sqlserver.jdbc.driverClassName}"/> 
+               <property name="url" value="${sqlserver.jdbc.url}"/> 
+           </bean> 
+       	</property> 
+       	<property name="user" value="${sqlserver.jdbc.username}"/> 
+       	<property name="password" value="${sqlserver.jdbc.password}"/> 
+        <!-- 设置连接池最大值 -->
+        <property name="maxSize" value="${sqlserver.jdbc.maxSize}" />
+        <!-- 设置连接池最小值 -->
+        <property name="minSize" value="${sqlserver.jdbc.minSize}" />
+        
+    </bean>
+
+    <!-- Spring整合MyBatis SqlSessionFactory -->
+    <bean id="mysqlSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation" value="classpath:SqlMapConfig-mysql.xml" />
+        <property name="dataSource" ref="MySQLdataSource" />
+    </bean>
+    <bean id="sqlserverSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation" value="classpath:SqlMapConfig-sqlserver.xml" />
+        <property name="dataSource" ref="SQLServerdataSource" />
+    </bean>
+    
+	<!--动态数据源设置  -->
+	<bean id="dynamicDataSource" class="com.core.framework.mybatis.support.DynamicDataSource" >  
+	    <!-- 通过key-value的形式来关联数据源 -->  
+	    <property name="targetDataSources">  
+	        <map>  
+	            <entry value-ref="SQLServerdataSource" key="sqlserver"/>
+	           <!--  <entry value-ref="OracledataSource" key="oracle"/> -->
+	            <entry value-ref="MySQLdataSource" key="mysql"/>
+	        </map>  
+	    </property>  
+    	<property name="defaultTargetDataSource" ref="MySQLdataSource" /> 
+	</bean>
+	
+     <!-- 配置自定义的SqlSessionTemplate模板，注入相关配置 -->
+    <bean id="sqlSession" class="com.core.framework.mybatis.support.CustomSqlSessionTemplate">
+        <constructor-arg ref="mysqlSqlSessionFactory" />
+        <property name="targetSqlSessionFactorys">
+            <map>     
+                <entry value-ref="sqlserverSqlSessionFactory" key="sqlserver"/>
+                <entry value-ref="mysqlSqlSessionFactory" key="mysql"/>
+                <!-- <entry value-ref="oracleSqlSessionFactory" key="oracle"/> -->
+            </map> 
+        </property>
+    </bean>
+    
+    <!-- TA事务管理器 -->
+    <bean id="jotm" class="com.core.framework.spring.JotmFactoryBean">
+	 <property name="defaultTimeout" value="500000"/>
+	</bean> 
+    
+    <!-- JTA事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+	        <property name="userTransaction" ref="jotm" />
+	</bean> 
+    <!-- AOP事务管理 -->
+    <!-- <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dynamicDataSource" />调用动态数据源设置
+    </bean> -->
+    
+    <tx:annotation-driven transaction-manager="transactionManager" />
+    
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="get*" read-only="true" />
+            <tx:method name="set*" read-only="true" />
+            <tx:method name="query*" read-only="true" />
+            <tx:method name="find*" read-only="true" />
+            <tx:method name="load*" read-only="true" />
+            <tx:method name="count*" read-only="true" />
+            <tx:method name="upload*" rollback-for="java.lang.Exception" propagation="REQUIRED" />
+            <tx:method name="add*" rollback-for="java.lang.Exception" propagation="REQUIRED" />
+            <tx:method name="save*" rollback-for="java.lang.Exception" propagation="REQUIRED" />
+            <tx:method name="update*" rollback-for="java.lang.Exception" propagation="REQUIRED" />
+            <tx:method name="delete*" rollback-for="java.lang.Exception" propagation="REQUIRED" />
+            <tx:method name="del*" rollback-for="java.lang.Exception" propagation="REQUIRED" /> 
+            <tx:method name="merage*" rollback-for="java.lang.Exception" propagation="REQUIRED" />
+        </tx:attributes>
+    </tx:advice>
+    <!-- 定时任务 -->
+	<bean name="quartzScheduler"  autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<!-- 必须，QuartzScheduler 延时启动，应用启动后 QuartzScheduler 再启动 -->
+		<property name="startupDelay" value="60" />
+		<!-- 普通触发器 ：触发器列表 -->
+		<property name="triggers">
+			<list>
+				<!--定时上传  -->
+ 				 <!-- <ref local="testTrigger" />  -->
+				<!--<ref local="testTrigger2" /> --> 
+			</list>
+		</property>
+	</bean>
+	<!-- 配置触发器 -->
+	<!--定时上传  -->
+	<!-- <bean id="testTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="testDetail" /> 触发器触发的 执行定时任务的bean
+		</property>
+		<property name="cronExpression">
+			每隔1秒执行一次 0/1 * * * * ?
+			0 0/5 * * * ? 5分钟执行一次
+			中午12点 0 0 12 * * ?
+			定时任务执行的间隔
+			<value>0 0/5 * * * ?</value>
+		</property>
+	</bean> -->
+	<!-- <bean id="testTrigger2" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="testDetail2" /> 触发器触发的 执行定时任务的bean
+		</property>
+		<property name="cronExpression">
+			每隔1秒执行一次 0/1 * * * * ?
+			0 0/5 * * * ? 5分钟执行一次
+			中午12点 0 0 12 * * ?
+			定时任务执行的间隔
+			<value>0 0/9 * * * ?</value>
+		</property>
+	</bean> -->
+
+	<!-- 配置执行定时任务的类和方法 -->
+	<!--定时上传  -->
+	<!-- <bean id="testDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<bean class=" com.framework.service.task.FileUploadTaskService"></bean>
+		</property>
+		<property name="targetMethod">
+			<value>uploadFileTask</value>
+		</property>
+	</bean> -->
+	<!-- 配置执行定时任务的类和方法 -->
+	<!-- <bean id="testDetail2"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<bean class="com.isoftstone.service.task.FileUploadTaskService"></bean>
+		</property>
+		<property name="targetMethod">
+			<value>cleanTmp</value>
+		</property>
+	</bean> -->
+</beans>

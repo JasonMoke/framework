@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+ "http://struts.apache.org/dtds/struts-2.1.dtd">
+<!-- struts是Struts 2配置文件的根元素 -->
+<struts>
+	<!-- Struts 2的Action必须放在指定的包空间下定义 -->
+	<package name="com.framework.action.login" namespace="/loginAction" extends="struts-default" >
+      	<action name="loginPage" class="com.framework.action.login.LoginAction" method="loginPage">
+               <result name="success">/jsp/framework/login/login.jsp</result>
+               <result name="error">/error.jsp</result>
+     	</action>
+      	<action name="logout" class="com.framework.action.login.LoginAction" method="logout">
+               <result name="success"  type="redirect">/login.jsp</result>
+               <result name="error">/login.jsp</result>
+     	</action>
+      	<action name="Login" class="com.framework.action.login.LoginAction" method="submitLogin">
+               <result name="success" type="redirect">checked.action</result>
+               <result name="error">/jsp/framework/login/login.jsp</result>
+               <result name="input">/jsp/framework/login/login.jsp</result>
+     	</action>
+		<action name="checked" class="com.framework.action.module.ModuleAction" method="getAllModulesForUser">
+ 				<result name="success">/index.jsp</result>
+                <result name="error">/error.jsp</result>
+ 		</action>
+		<action name="changeLanguage" class="com.framework.action.login.LoginAction" method="changeLanguage">
+ 				<result name="success" type="redirect">checked.action?request_locale=${localeStr}</result>
+                <result name="error">/error.jsp</result>
+ 		</action>
+      	<action name="changeLanguageLogin" class="com.framework.action.login.LoginAction" method="changeLanguage">
+               <result name="success" >/login.jsp</result>
+     	</action>
+      	<action name="home" class="com.framework.action.login.LoginAction" method="home">
+               <result name="success" >/home.jsp</result>
+     	</action>
+	</package>
+</struts>
+ 	

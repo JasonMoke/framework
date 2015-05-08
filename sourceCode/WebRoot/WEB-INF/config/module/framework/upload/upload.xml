@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+ "http://struts.apache.org/dtds/struts-2.1.dtd">
+<!-- struts是Struts 2配置文件的根元素 -->
+<struts>
+	<!-- Struts 2的Action必须放在指定的包空间下定义 -->
+	<package name="com.framework.ftp" namespace="/upload" extends="struts-default" >
+	    <action name="getPriviewInp" class="com.framework.ftp.uploadUtil" method="getPriviewInp">
+	 			 <result name="success" type="stream"><!--type 为 stream 应用 StreamResult 处理-->       
+			         <param name="contentType">application/x-download</param><!--默认为 text/plain-->       
+			         <param name="inputName">inputStream</param>       
+			     </result> 
+	 	</action>
+	    <action name="getPriviewInpByPath" class="com.core.sftps.ftp.uploadUtil" method="getPriviewInpByPath">
+	 			 <result name="success" type="stream"><!--type 为 stream 应用 StreamResult 处理-->       
+			         <param name="contentType">application/x-download</param><!--默认为 text/plain-->       
+			                
+			         <!-- 默认就是 inputStream，它将会指示 StreamResult 通过 inputName 属性值的 getter 方法，       
+			               比如这里就是 getInputStream() 来获取下载文件的内容，意味着你的 Action 要有这个方法 -->       
+			         <param name="inputName">inputStream</param>       
+			                
+			         <!-- 默认为 inline(在线打开)，设置为 attachment 将会告诉浏览器下载该文件，filename 指定下载文       
+			               件保有存时的文件名，若未指定将会是以浏览的页面名作为文件名，如以 download.action 作为文件名，       
+			               这里使用的是动态文件名，${fileName}, 它将通过 Action 的 getFileName() 获得文件名 -->       
+			         <!-- <param name="contentDisposition">attachment;filename="${fileName}"</param>       
+			         <param name="bufferSize">4096</param> --><!-- 输出时缓冲区的大小 -->       
+			     </result> 
+	 	</action>
+	    <action name="getPriviewInpByCondition" class="com.core.sftps.ftp.uploadUtil" method="getPriviewInpByCondition">
+	 			 <result name="success" type="stream"><!--type 为 stream 应用 StreamResult 处理-->       
+			         <param name="contentType">application/x-download</param><!--默认为 text/plain-->       
+			         <param name="inputName">inputStream</param>       
+			     </result> 
+	 	</action>
+	    <action name="getFileStreamByPath" class="com.core.sftps.ftp.uploadUtil" method="getFileStreamByPath">
+	 			 <result name="success" type="stream"><!--type 为 stream 应用 StreamResult 处理-->       
+			         <param name="contentType">application/x-download</param><!--默认为 text/plain-->       
+			         <param name="inputName">inputStream</param>       
+			     </result> 
+	 	</action>
+	    <action name="getPriviewInpForOtherFTP" class="com.core.sftps.ftp.uploadUtil" method="getPriviewInpForOtherFTP">
+	 			 <result name="success" type="stream"><!--type 为 stream 应用 StreamResult 处理-->       
+			         <param name="contentType">application/x-download</param><!--默认为 text/plain-->       
+			         <param name="inputName">inputStream</param>       
+			     </result> 
+	 	</action>
+	</package>
+</struts>

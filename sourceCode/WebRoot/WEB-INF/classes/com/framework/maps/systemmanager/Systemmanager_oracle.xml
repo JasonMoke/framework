@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--  -->
+<mapper namespace="com.framework.maps.Systemmanager">
+
+    <!-- insert 元素：添加一条记录 -->
+    <insert id="add" parameterType="Systemmanager">
+        INSERT INTO SYSTEMMANAGER	 
+        (
+            SYSTEMCODE,
+            SHORTNAME,
+            FULLNAME,
+            SYSTEMADDRESS,
+            SYSTEMREMARK,
+            SYSTEMNUMBER,
+            STATUS,
+            CREATEPERSON,
+            CREATETIME,
+            UPDATEPERSON,
+            UPDATETIME,
+            BIGLOGO,
+            SMALLLOGO
+        ) 
+        VALUES 
+        (
+            #{SystemCode,jdbcType=VARCHAR},
+            #{ShortName,jdbcType=VARCHAR},
+            #{FullName,jdbcType=VARCHAR},
+            #{SystemAddress,jdbcType=VARCHAR},
+            #{SystemRemark,jdbcType=VARCHAR},
+            #{SystemNumber,jdbcType=NUMERIC},
+            #{Status,jdbcType=NUMERIC},
+            #{CreatePerson,jdbcType=VARCHAR},
+            #{CreateTime,jdbcType=DATE},
+            #{UpdatePerson,jdbcType=VARCHAR},
+            #{UpdateTime,jdbcType=DATE},
+            #{BigLogo,jdbcType=BLOB},
+            #{SmallLogo,jdbcType=BLOB}            
+        )
+    </insert>
+    
+    <!-- insert 元素：添加多条记录 -->
+    <insert id="addList" parameterType="Systemmanager">
+        INSERT INTO SYSTEMMANAGER 
+        (
+            SYSTEMCODE,
+            SHORTNAME,
+            FULLNAME,
+            SYSTEMADDRESS,
+            BIGLOGO,
+            SMALLLOGO,
+            SYSTEMREMARK,
+            SYSTEMNUMBER,
+            STATUS,
+            CREATEPERSON,
+            CREATETIME,
+            UPDATEPERSON,
+            UPDATETIME
+        ) 
+        VALUES 
+        <foreach collection="list" item="lt" index="index" separator=",">
+        (
+            #{lt.SystemCode},
+            #{lt.ShortName},
+            #{lt.FullName},
+            #{lt.SystemAddress},
+            #{lt.BigLogo},
+            #{lt.SmallLogo},
+            #{lt.SystemRemark},
+            #{lt.SystemNumber},
+            #{lt.Status},
+            #{lt.CreatePerson},
+            #{lt.CreateTime},
+            #{lt.UpdatePerson},
+            #{lt.UpdateTime}
+        )
+        </foreach>
+    </insert>
+    
+    <!-- update 元素：更新一条记录 -->
+    <update id="update" parameterType="Systemmanager">
+        UPDATE SYSTEMMANAGER SET 
+            SHORTNAME=#{ShortName,jdbcType=VARCHAR},
+            FULLNAME=#{FullName,jdbcType=VARCHAR},
+            SYSTEMADDRESS=#{SystemAddress,jdbcType=VARCHAR},
+            BIGLOGO=#{BigLogo,jdbcType=BLOB},
+            SMALLLOGO=#{SmallLogo,jdbcType=BLOB},
+            SYSTEMREMARK=#{SystemRemark,jdbcType=VARCHAR},
+            SYSTEMNUMBER=#{SystemNumber,jdbcType=NUMERIC},
+            STATUS=#{Status,jdbcType=NUMERIC},
+            UPDATEPERSON=#{UpdatePerson,jdbcType=VARCHAR},
+            UPDATETIME=#{UpdateTime,jdbcType=DATE}
+        WHERE 
+            SYSTEMCODE=#{SystemCode,jdbcType=VARCHAR}
+    </update>
+    
+    <!-- update 元素：更新状态 -->
+    <update id="changeStatus" parameterType="Systemmanager">
+        UPDATE SYSTEMMANAGER SET 
+            STATUS=#{Status},
+            UPDATEPERSON=#{UpdatePerson},
+            UPDATETIME=#{UpdateTime}
+        WHERE 
+            SYSTEMCODE=#{SystemCode}
+    </update>
+    
+    <!-- update 元素：更新多条记录 -->
+    <update id="updateStatusByIds" parameterType="java.util.Map">
+        UPDATE SYSTEMMANAGER SET 
+            STATUS=#{Status},
+            UPDATEPERSON=#{UpdatePerson},
+            UPDATETIME=#{UpdateTime}
+        WHERE 
+            SYSTEMCODE IN 
+            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+                #{item}  
+            </foreach> 
+    </update>
+    
+    <!-- delete 元素：根据主键删除一条记录 -->
+    <delete id="delete" parameterType="java.lang.String">
+        DELETE FROM SYSTEMMANAGER 
+        WHERE 
+            SYSTEMCODE=#{SystemCode}
+    </delete>
+    
+    <!-- update 元素：逻辑删除一条记录 -->
+    <update id="deleteByLogic" parameterType="java.lang.String">
+        UPDATE SYSTEMMANAGER SET 
+            STATUS=99,
+            UPDATEPERSON=#{UpdatePerson},
+            UPDATETIME=#{UpdateTime}
+        WHERE
+            SYSTEMCODE=#{SystemCode}
+    </update>
+    
+    <!-- update 元素：逻辑删除多条记录 -->
+    <update id="deleteBatch" parameterType="Systemmanager">
+        UPDATE SYSTEMMANAGER SET 
+            STATUS=99,
+            UPDATEPERSON=#{UpdatePerson},
+            UPDATETIME=#{UpdateTime}
+        	WHERE 
+            SYSTEMCODE IN 
+            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+                #{item}  
+            </foreach> 
+    </update>
+
+    <!-- select 元素：查询所有的记录 -->
+    <select id="findAll" resultType="Systemmanager">
+        SELECT * FROM SYSTEMMANAGER 
+        WHERE 
+            STATUS!=99
+ 			<if test="ShortName != null and ShortName !='' ">
+		     AND SHORTNAME LIKE '%${ShortName}%'
+		  	</if>
+	        <if test="FullName != null and FullName !=''">
+		     AND FULLNAME LIKE '%${FullName}%'
+		  	</if>
+	        <if test="Status ==1 or Status ==0 ">
+			and STATUS=#{Status}
+			</if>
+			<if test="SystemCode  != null and SystemCode !=''">
+			and SystemCode IN 
+            <foreach item="item" index="index" collection="SystemCode" open="(" separator="," close=")">  
+                #{item}  
+            </foreach> 
+            </if>
+            ORDER BY SYSTEMNUMBER DESC        
+    </select>
+    
+    <!-- select 元素：根据主键获取数据 -->
+    <select id="findById" resultType="Systemmanager">
+        <![CDATA[
+        SELECT * FROM SYSTEMMANAGER 
+        WHERE 
+            SYSTEMCODE=#{SystemCode}
+            AND STATUS!=99
+        ]]>
+    </select>
+    
+    <!-- select 元素：获取记录条数 -->
+    <select id="count">
+        <![CDATA[
+        SELECT COUNT(*) FROM SYSTEMMANAGER 
+        WHERE
+            SYSTEMCODE=#{SystemCode}
+            AND STATUS!=99
+        ]]>
+    </select>
+</mapper>

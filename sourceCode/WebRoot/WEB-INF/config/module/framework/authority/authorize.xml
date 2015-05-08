@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+<!-- struts是Struts 2配置文件的根元素 -->
+<struts>
+	<!-- Struts 2的Action必须放在指定的包空间下定义 -->
+	<package name="com.framework.action.authorize" namespace="/authorize" extends="struts-default">
+		<action name="SelResourcesAndModule" class="com.framework.action.authorize.AuthorizeAction"
+			method="SelResourcesAndModule">
+			<result name="success" type="redirectAction">
+				<param name="actionName">findAllRoles.action</param>
+				<param name="namespace">/role</param>  
+			</result>
+			<result name="input">/error.jsp</result>
+		</action>
+		<action name="gotoAuthorize" class="com.framework.action.authorize.AuthorizeAction" method="gotoAuthorize">
+			<result name="success">/jsp/framework/authority/authorize_index.jsp</result>
+		</action> 
+	</package>
+
+</struts>
